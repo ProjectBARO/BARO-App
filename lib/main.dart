@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/loginView.dart';
+import 'screens/login_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,8 +12,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BARO',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
       home: const Login(),
