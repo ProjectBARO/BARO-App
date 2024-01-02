@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/login_view.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'routes.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -10,14 +11,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'BARO',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
-      home: const Login(),
+      routerConfig: router,
     );
   }
 }
