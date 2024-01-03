@@ -21,7 +21,7 @@ class LoginState extends ConsumerState<Login> {
     String? accessToken = await storage.read(key: "accessToken");
     if (accessToken != null) {
       if (!mounted) return;
-      GoRouter.of(context).go('/test');
+      GoRouter.of(context).go('/main');
     }
   }
 
@@ -61,7 +61,7 @@ class LoginState extends ConsumerState<Login> {
                       auth.getToken(userState.currentUser!).then((String token) {
                         auth.storeToken(token, 'refreshToken');
                       });
-                      GoRouter.of(context).go('/test');
+                      GoRouter.of(context).go('/main');
                     } else {
                       print("로그인 실패");
                     }
