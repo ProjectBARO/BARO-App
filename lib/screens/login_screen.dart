@@ -58,7 +58,10 @@ class LoginState extends ConsumerState<Login> {
                   auth.signInWithGoogle().then((User? user) {
                     if (user != null) {
                       userState.setUser(user);
-                      GoRouter.of(context).go('/signup');
+                      auth.getToken(userState.currentUser!).then((String token) {
+                        auth.storeToken(token, 'refreshToken');
+                      });
+                      GoRouter.of(context).go('/test');
                     } else {
                       print("로그인 실패");
                     }

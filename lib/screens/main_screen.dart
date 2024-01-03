@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
-class Test extends ConsumerStatefulWidget {
-  const Test({super.key});
+class MainPage extends ConsumerStatefulWidget {
+  const MainPage({super.key});
   
   @override
-  TestState createState() => TestState();
+  MainPageState createState() => MainPageState();
 }
 
-class TestState extends ConsumerState<Test> {
+class MainPageState extends ConsumerState<MainPage> {
   final storage = const FlutterSecureStorage();
 
   Future<void> printToken() async {
@@ -39,7 +39,6 @@ class TestState extends ConsumerState<Test> {
                 child: const Text("토큰 출력"),
                 onPressed: () {
                   printToken();
-                  user.printUser();
                 },
               ),
               ElevatedButton(

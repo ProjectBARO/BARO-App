@@ -2,15 +2,15 @@ class User {
   final String? email;
   final String? name;
   // final String? photoUrl;
-  int? age;
-  String? gender;
+  final int? birthday;
+  final String? gender;
 
   User({
     required this.email,
     required this.name,
     // required this.photoUrl,
-    this.age,
-    this.gender,
+    required this.birthday,
+    required this.gender
   });
 
   Map<String, dynamic> toJson() {
@@ -18,7 +18,7 @@ class User {
       'email': email,
       'name' : name,
       // 'photoUrl': photoUrl,
-      'age': age,
+      'birthday': birthday,
       'gender': gender,
     };
   }

@@ -11,6 +11,7 @@ class IntroView extends StatefulWidget {
 class _IntroViewState extends State<IntroView> {
   final _controller = PageController();
   final _pageCount = 4;
+  // ignore: unused_field
   var _currentPage = 0.0;
 
   @override
@@ -54,11 +55,6 @@ class _IntroViewState extends State<IntroView> {
             const Text("3"),
             const Text("4"),
           ],
-          onPageChanged: (int page) {
-            setState(() {
-              _currentPage = page.toDouble();
-            });
-          },
         ),
         Positioned(
             bottom: 10,

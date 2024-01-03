@@ -12,24 +12,6 @@ class UserState extends StateNotifier<User?> {
   void setUser(User? user) {
     state = user;
   }
-
-  void updateUser(int age, String gender) {
-    if (state != null) {
-      state = User(
-        email: state!.email,
-        name: state!.name,
-        age: age,
-        gender: gender,
-      );
-    }
-  }
-
-  void printUser() {
-    print(state!.email);
-    print(state!.name);
-    print(state!.age);
-    print(state!.gender);
-  }
 }
 
 final userProvider = StateNotifierProvider<UserState, User?>((ref) => UserState());
