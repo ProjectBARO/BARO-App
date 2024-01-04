@@ -56,5 +56,7 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>GIDClientID</key>
+		<string>225507123974-96qt2r8o6rvevq4jkuead3eqdrtue6ni.apps.googleusercontent.com</string>
 	</dict>
 </plist>
