@@ -1,17 +1,19 @@
 import 'package:baro_project/provider/auth_provider.dart';
+import 'package:baro_project/widgets/app_bar.dart';
+import 'package:baro_project/widgets/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
-class MainPage extends ConsumerStatefulWidget {
-  const MainPage({super.key});
-  
+class MainScreen extends ConsumerStatefulWidget {
+  const MainScreen({super.key});
+
   @override
-  MainPageState createState() => MainPageState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class MainPageState extends ConsumerState<MainPage> {
+class MainScreenState extends ConsumerState<MainScreen> {
   final storage = const FlutterSecureStorage();
 
   Future<void> printToken() async {
@@ -27,14 +29,10 @@ class MainPageState extends ConsumerState<MainPage> {
     final auth = ref.read(authProvider);
 
     return Scaffold(
-        appBar: AppBar(
-          leading: Image.asset("assets/images/logo.png", fit: BoxFit.contain),
-          backgroundColor: Colors.white,
-        ),
+        appBar: customAppBar(context),
         body: Center(
           child: Column(
             children: [
-              const Text("성공"),
               ElevatedButton(
                 child: const Text("토큰 출력"),
                 onPressed: () {
@@ -47,9 +45,11 @@ class MainPageState extends ConsumerState<MainPage> {
                     await auth.signOut();
                     if (!mounted) return;
                     GoRouter.of(context).go('/login');
-                  })
+                  }),
             ],
           ),
-        ));
+        ),
+        endDrawer: customDrawer(context),
+    );
   }
 }
