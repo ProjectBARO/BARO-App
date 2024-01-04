@@ -1,5 +1,4 @@
 import 'package:baro_project/screens/calendar_screen.dart';
-import 'package:baro_project/screens/camera_page.dart';
 import 'package:baro_project/screens/info_screen.dart';
 import 'package:baro_project/screens/youtube_screen.dart';
 import 'package:baro_project/widgets/nav_bar.dart';
@@ -16,10 +15,6 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
   GoRoute(
     path: '/login',
     builder: (context, state) => const Login(),
-  ),
-  GoRoute(
-    path: '/camera',
-    builder: (context, state) => const CameraPage(),
   ),
   GoRoute(
     path: '/notification',
