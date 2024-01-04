@@ -1,6 +1,4 @@
 import 'package:baro_project/provider/auth_provider.dart';
-import 'package:baro_project/widgets/app_bar.dart';
-import 'package:baro_project/widgets/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -29,7 +27,6 @@ class MainScreenState extends ConsumerState<MainScreen> {
     final auth = ref.read(authProvider);
 
     return Scaffold(
-        appBar: customAppBar(context),
         body: Center(
           child: Column(
             children: [
@@ -49,7 +46,6 @@ class MainScreenState extends ConsumerState<MainScreen> {
             ],
           ),
         ),
-        endDrawer: customDrawer(context),
     );
   }
 }
