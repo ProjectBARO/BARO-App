@@ -12,40 +12,26 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class MainScreenState extends ConsumerState<MainScreen> {
-  final storage = const FlutterSecureStorage();
-
-  Future<void> printToken() async {
-    String? accessToken = await storage.read(key: "accessToken");
-    String? refreshToken = await storage.read(key: "refreshToken");
-    print(accessToken);
-    print(refreshToken);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final user = ref.read(userProvider.notifier);
-    final auth = ref.read(authProvider);
-
     return Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                child: const Text("토큰 출력"),
-                onPressed: () {
-                  printToken();
-                },
-              ),
-              ElevatedButton(
-                  child: const Text("로그아웃"),
-                  onPressed: () async {
-                    await auth.signOut();
-                    if (!mounted) return;
-                    GoRouter.of(context).go('/login');
-                  }),
-            ],
-          ),
-        ),
+      body: SingleChildScrollView(
+          child: Center(
+              child: Column(
+                children: <Widget>[
+                  const Text("BARO와 함께\n공부, 작업 등 앉아있는 시간동안\n자세를 측정해보세요!", textAlign: TextAlign.center),
+                  const SizedBox(height: 20.0),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff3492E8),
+                    ),
+                    child: const Text("측정하기", style: TextStyle(color: Colors.white),),
+                  ),
+                ],
+              )
+          )
+      ),
     );
   }
 }
