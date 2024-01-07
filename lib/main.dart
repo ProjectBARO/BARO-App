@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
+        fontFamily: 'NotoSans'
       ),
       routerConfig: router,
     );
