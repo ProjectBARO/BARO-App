@@ -43,7 +43,7 @@ dependencies:
   path: ^1.8.3
   http: ^1.1.0
   camera: ^0.10.5+8
-  video_compress: ^3.1.2
+  video_compress: 3.1.1
   flutter_dotenv: ^5.1.0
   font_awesome_flutter: ^10.6.0
   smooth_page_indicator: ^1.1.0

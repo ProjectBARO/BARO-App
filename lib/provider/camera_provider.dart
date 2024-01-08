@@ -38,16 +38,16 @@ class CameraProvider extends StateNotifier<CameraState> {
     if (state.isRecording) {
       XFile videoFile = await state.controller!.stopVideoRecording();
       String videoPath = videoFile.path;
-
+      state = state.copyWith(isCompressing: true);
       final result = await VideoCompress.compressVideo(
         videoPath,
         quality: VideoQuality.LowQuality,
         deleteOrigin: true,
       );
-
       videoPath = result!.path!;
+      state = state.copyWith(isCompressing: false, isUploading: true);
       await uploadVideo(result.path!);
-      state = state.copyWith(isRecording: false, videoPath: videoPath);
+      state = state.copyWith(isRecording: false, videoPath: videoPath, isUploading: false);
     } else {
       ref.watch(timerProvider.notifier).state = 10;
       Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -55,7 +55,7 @@ class CameraProvider extends StateNotifier<CameraState> {
           ref.watch(timerProvider.notifier).state -= 1;
         } else {
           timer.cancel();
-          state.controller!.stopVideoRecording();
+          state.controller!.startVideoRecording();
           state = state.copyWith(isRecording: true);
         }
       });

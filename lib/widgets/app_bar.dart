@@ -5,6 +5,7 @@ PreferredSizeWidget customAppBar(BuildContext context) {
   return AppBar(
     leading: Image.asset("assets/images/logo.png", fit: BoxFit.contain),
     backgroundColor: Colors.white,
+    scrolledUnderElevation: 0.0,
     actions: <Widget>[
       IconButton(
         icon: const FaIcon(FontAwesomeIcons.bell),

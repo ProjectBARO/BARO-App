@@ -8,7 +8,7 @@ class YoutubeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return const Scaffold(
       body: Center(
-        child: Text("Youtube"),
+        child: Text("Youtube Screen"),
       ),
     );
   }
