@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "225507123974",
+    "project_id": "baroproject",
+    "storage_bucket": "baroproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225507123974:android:c3ac5cd8cf63ddcc7c7487",
+        "android_client_info": {
+          "package_name": "com.quadcore.baro_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkfTPNO4vkXu59mB7cm6vLLIXFBGBEeoc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "225507123974-96qt2r8o6rvevq4jkuead3eqdrtue6ni.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quadcore.baroProject"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
