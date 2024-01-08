@@ -1,9 +1,12 @@
 import 'package:baro_project/screens/calendar_screen.dart';
+import 'package:baro_project/screens/category_screen.dart';
+import 'package:baro_project/screens/guide_screen.dart';
 import 'package:baro_project/screens/info_screen.dart';
 import 'package:baro_project/screens/youtube_screen.dart';
 import 'package:baro_project/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'screens/camera_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/noti_screen.dart';
@@ -20,25 +23,44 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
     path: '/notification',
     builder: (context, state) => const NotificationManager(),
   ),
+  GoRoute(path: '/category', builder: (context, state) => const CategoryScreen(), routes: [
+    GoRoute(
+      path: 'guide',
+      builder: (context, state) => const GuideScreen(),
+      routes: [
+        GoRoute(
+          path: 'camera',
+          builder: (context, state) => const CameraScreen(),
+        )
+      ]
+    ),
+  ]),
   ShellRoute(
     navigatorKey: _shellNavigatorKey,
     builder: (context, state, child) => NavBarWidget(child: child),
+    // pageBuilder: (context, state, child) {
+    //   return NoTransitionPage(
+    //     child: NavBarWidget(child: child),
+    //   );
+    // },
     routes: <RouteBase>[
       GoRoute(
         path: '/main',
-        builder: (context, state) => const MainScreen(),
+        parentNavigatorKey: _shellNavigatorKey,
+        pageBuilder: (context, state) => const NoTransitionPage(child: MainScreen()),
       ),
       GoRoute(
         path: '/calendar',
-        builder: (context, state) => const CalendarScreen(),
+        parentNavigatorKey: _shellNavigatorKey,
+        pageBuilder: (context, state) => const NoTransitionPage(child: CalendarScreen()),
       ),
       GoRoute(
-        path: '/youtube',
-        builder: (context, state) => const YoutubeScreen(),
+          path: '/youtube',
+          pageBuilder: (context, state) => const NoTransitionPage(child: YoutubeScreen()),
       ),
       GoRoute(
         path: '/information',
-        builder: (context, state) => const InformationScreen(),
+        pageBuilder: (context, state) => const NoTransitionPage(child: InformationScreen())
       ),
     ],
   ),
