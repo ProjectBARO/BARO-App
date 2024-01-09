@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:video_compress/video_compress.dart';
@@ -12,8 +13,9 @@ final cameraProvider = StateNotifierProvider<CameraProvider, CameraState>((ref) 
 final timerProvider = StateProvider<int>((ref) => 0);
 final pauseProvider = StateProvider<bool>((ref) => false);
 
-class CameraProvider extends StateNotifier<CameraState> {
+class CameraProvider extends StateNotifier<CameraState> with WidgetsBindingObserver {
   CameraProvider() : super(CameraState()) {
+    WidgetsBinding.instance.addObserver(this);
     _initCamera();
   }
 
@@ -21,17 +23,32 @@ class CameraProvider extends StateNotifier<CameraState> {
 
   Future<void> _initCamera() async {
     cameras = await availableCameras();
-    _setCamera(cameras!.first);
+    _setCamera(cameras![0]);
+  }
+
+  Future<void> _disposeController() async {
+    if (state.controller == null) return;
+    final cameraController = state.controller;
+    state = state.copyWith(controller: null);
+    await cameraController!.dispose();
   }
 
   Future<void> _setCamera(CameraDescription cameraDescription) async {
-    CameraController? oldController = state.controller;
+    if (state.controller != null) {
+      await state.controller!.dispose();
+    }
+
     CameraController controller = CameraController(
       cameraDescription,
       ResolutionPreset.high,
     );
-    state = state.copyWith(controller: controller, initializeControllerFuture: controller.initialize());
-    oldController?.dispose();
+
+    try {
+      await controller.initialize();
+      state = state.copyWith(controller: controller);
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> startStopRecording(WidgetRef ref) async {
@@ -74,18 +91,15 @@ class CameraProvider extends StateNotifier<CameraState> {
 
   Future<void> switchCamera() async {
     if (cameras == null || cameras!.isEmpty) return;
-    CameraLensDirection currentLensDirection = state.controller!.description.lensDirection;
-    CameraLensDirection newLensDirection =
-        currentLensDirection == CameraLensDirection.front ? CameraLensDirection.back : CameraLensDirection.front;
-
-    CameraDescription newCamera =
-        cameras!.firstWhere((camera) => camera.lensDirection == newLensDirection, orElse: () => cameras!.first);
+    CameraDescription newCamera = cameras!.firstWhere(
+        (camera) => camera.lensDirection != state.controller!.description.lensDirection,
+        orElse: () => cameras!.first);
     _setCamera(newCamera);
   }
 
   Future<void> uploadVideo(String path) async {
     try {
-      FirebaseStorage.instance.ref('video/${basename(path)}').putFile(File(path));
+      await FirebaseStorage.instance.ref('video/${basename(path)}').putFile(File(path));
     } on FirebaseException catch (e) {
       log(e.toString());
     }
@@ -93,7 +107,19 @@ class CameraProvider extends StateNotifier<CameraState> {
 
   @override
   void dispose() {
-    state.controller?.dispose();
+    _disposeController();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (AppLifecycleState.paused == state) {
+      _disposeController();
+    } else {
+      if (this.state.controller == null) {
+        _initCamera();
+      }
+    }
   }
 }

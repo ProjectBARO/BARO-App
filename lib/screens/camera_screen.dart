@@ -4,11 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class CameraScreen extends ConsumerWidget {
+class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  CameraScreenState createState() => CameraScreenState();
+}
+
+class CameraScreenState extends ConsumerState<CameraScreen> {
+  
+
+  @override
+  Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraProvider);
     final timer = ref.watch(timerProvider);
     final isPause = ref.watch(pauseProvider);
@@ -41,16 +48,11 @@ class CameraScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          FutureBuilder<void>(
-            future: cameraState.initializeControllerFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return CameraPreview(cameraState.controller!);
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
+          cameraState.controller != null && cameraState.controller!.value.isInitialized
+              ? CameraPreview(cameraState.controller!)
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
           // if(!cameraState.isRecording) Positioned(
           //촬영 프레임
           // )
