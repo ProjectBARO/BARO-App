@@ -1,8 +1,12 @@
 import 'package:baro_project/provider/camera_provider.dart';
+import 'package:baro_project/widgets/app_bar_back.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+
+import '../provider/timer_provider.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
@@ -12,12 +16,16 @@ class CameraScreen extends ConsumerStatefulWidget {
 }
 
 class CameraScreenState extends ConsumerState<CameraScreen> {
-  
+  @override
+  void dispose() {
+    ref.watch(timerProvider.notifier).resetTimer();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraProvider);
-    final timer = ref.watch(timerProvider);
+    final timerState = ref.watch(timerProvider);
     final isPause = ref.watch(pauseProvider);
 
     List<Widget> actionButtons = [
@@ -46,6 +54,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
     }
 
     return Scaffold(
+      appBar: customAppBarBack(context, () => context.pop()),
       body: Stack(
         children: <Widget>[
           cameraState.controller != null && cameraState.controller!.value.isInitialized
@@ -53,14 +62,23 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
               : const Center(
                   child: CircularProgressIndicator(),
                 ),
-          // if(!cameraState.isRecording) Positioned(
-          //촬영 프레임
-          // )
-          if (timer > 0)
+          if (!cameraState.isRecording && timerState.currentTime == 0)
+            Positioned(
+              left: MediaQuery.of(context).size.width * 0.1,
+              right: MediaQuery.of(context).size.width * 0.1,
+              top: MediaQuery.of(context).size.height * 0.1,
+              bottom: MediaQuery.of(context).size.height * 0.1,
+              child: Image.asset(
+                'assets/images/frame.png',
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.5,
+              ),
+            ),
+          if (timerState.currentTime > 0)
             Center(
               child: Text(
-                "$timer",
-                style: const TextStyle(fontSize: 48.0, fontWeight: FontWeight.w700),
+                "${timerState.currentTime}",
+                style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
               ),
             ),
           if (cameraState.isCompressing || cameraState.isUploading)

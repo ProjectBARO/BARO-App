@@ -8,13 +8,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:video_compress/video_compress.dart';
 import '../models/camera.dart';
+import 'timer_provider.dart';
 
-final cameraProvider = StateNotifierProvider<CameraProvider, CameraState>((ref) => CameraProvider());
-final timerProvider = StateProvider<int>((ref) => 0);
+final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>((ref) => CameraNotifier());
 final pauseProvider = StateProvider<bool>((ref) => false);
 
-class CameraProvider extends StateNotifier<CameraState> with WidgetsBindingObserver {
-  CameraProvider() : super(CameraState()) {
+class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObserver {
+  CameraNotifier() : super(CameraState()) {
     WidgetsBinding.instance.addObserver(this);
     _initCamera();
   }
@@ -40,7 +40,7 @@ class CameraProvider extends StateNotifier<CameraState> with WidgetsBindingObser
 
     CameraController controller = CameraController(
       cameraDescription,
-      ResolutionPreset.high,
+      ResolutionPreset.low,
     );
 
     try {
@@ -52,6 +52,8 @@ class CameraProvider extends StateNotifier<CameraState> with WidgetsBindingObser
   }
 
   Future<void> startStopRecording(WidgetRef ref) async {
+    final timer = ref.watch(timerProvider.notifier);
+
     if (state.isRecording) {
       XFile videoFile = await state.controller!.stopVideoRecording();
       String videoPath = videoFile.path;
@@ -66,12 +68,9 @@ class CameraProvider extends StateNotifier<CameraState> with WidgetsBindingObser
       await uploadVideo(result.path!);
       state = state.copyWith(isRecording: false, videoPath: videoPath, isUploading: false);
     } else {
-      ref.watch(timerProvider.notifier).state = 10;
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (ref.watch(timerProvider.notifier).state > 0) {
-          ref.watch(timerProvider.notifier).state -= 1;
-        } else {
-          timer.cancel();
+      timer.startTimer();
+      ref.listen<TimerState>(timerProvider, (newState, _) {
+        if (newState?.currentTime == 0) {
           state.controller!.startVideoRecording();
           state = state.copyWith(isRecording: true);
         }
