@@ -13,10 +13,17 @@ class TimerNotifier extends StateNotifier<TimerState> {
   TimerNotifier() : super(TimerState(0));
 
   void startTimer() {
+    if (_timer?.isActive ?? false) {
+      return;
+    }
     _timer?.cancel();
     state = TimerState(10);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      state = TimerState(state.currentTime - 1);
+      if (state.currentTime <= 1) {
+        timer.cancel();
+      } else {
+        state = TimerState(state.currentTime - 1);
+      }
     });
   }
 
