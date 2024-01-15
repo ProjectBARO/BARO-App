@@ -17,12 +17,6 @@ class CameraScreen extends ConsumerStatefulWidget {
 
 class CameraScreenState extends ConsumerState<CameraScreen> {
   @override
-  void dispose() {
-    ref.watch(timerProvider.notifier).resetTimer();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraProvider);
     final timerState = ref.watch(timerProvider);

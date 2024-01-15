@@ -69,12 +69,11 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
       state = state.copyWith(isRecording: false, videoPath: videoPath, isUploading: false);
     } else {
       timer.startTimer();
-      ref.listen<TimerState>(timerProvider, (newState, _) {
-        if (newState?.currentTime == 0) {
-          state.controller!.startVideoRecording();
-          state = state.copyWith(isRecording: true);
-        }
-      });
+      await Future.delayed(const Duration(seconds: 10));
+      // if(timer.state.currentTime == 0) {
+      await state.controller!.startVideoRecording();
+      state = state.copyWith(isRecording: true);
+      // }
     }
   }
 
