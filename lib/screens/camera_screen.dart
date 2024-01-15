@@ -56,18 +56,18 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
               : const Center(
                   child: CircularProgressIndicator(),
                 ),
-          if (!cameraState.isRecording && timerState.currentTime == 0)
-            Positioned(
-              left: MediaQuery.of(context).size.width * 0.1,
-              right: MediaQuery.of(context).size.width * 0.1,
-              top: MediaQuery.of(context).size.height * 0.1,
-              bottom: MediaQuery.of(context).size.height * 0.1,
-              child: Image.asset(
-                'assets/images/frame.png',
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.5,
-              ),
-            ),
+          // if (!cameraState.isRecording && timerState.currentTime == 0)
+          //   Positioned(
+          //     left: MediaQuery.of(context).size.width * 0.1,
+          //     right: MediaQuery.of(context).size.width * 0.1,
+          //     top: MediaQuery.of(context).size.height * 0.1,
+          //     bottom: MediaQuery.of(context).size.height * 0.1,
+          //     child: Image.asset(
+          //       'assets/images/frame.png',
+          //       width: MediaQuery.of(context).size.width * 0.5,
+          //       height: MediaQuery.of(context).size.height * 0.5,
+          //     ),
+          //   ),
           if (timerState.currentTime > 0)
             Center(
               child: Text(

@@ -1,20 +1,22 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
+import 'package:baro_project/service/video_compressor.dart';
+import 'package:baro_project/service/video_uploader.dart';
 import 'package:camera/camera.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart';
-import 'package:video_compress/video_compress.dart';
 import '../models/camera.dart';
 import 'timer_provider.dart';
 
-final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>((ref) => CameraNotifier());
+final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>(
+    (ref) => CameraNotifier(videoCompressor: VideoCompressor(), videoUploader: VideoUploader()));
 final pauseProvider = StateProvider<bool>((ref) => false);
 
 class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObserver {
-  CameraNotifier() : super(CameraState()) {
+  final VideoCompressor videoCompressor;
+  final VideoUploader videoUploader;
+
+  CameraNotifier({required this.videoCompressor, required this.videoUploader}) : super(CameraState()) {
     WidgetsBinding.instance.addObserver(this);
     _initCamera();
   }
@@ -53,27 +55,20 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
 
   Future<void> startStopRecording(WidgetRef ref) async {
     final timer = ref.watch(timerProvider.notifier);
-
     if (state.isRecording) {
       XFile videoFile = await state.controller!.stopVideoRecording();
       String videoPath = videoFile.path;
       state = state.copyWith(isCompressing: true);
-      final result = await VideoCompress.compressVideo(
-        videoPath,
-        quality: VideoQuality.LowQuality,
-        deleteOrigin: true,
-      );
+      final result = await videoCompressor.compressVideo(videoPath);
       videoPath = result!.path!;
       state = state.copyWith(isCompressing: false, isUploading: true);
-      await uploadVideo(result.path!);
+      await videoUploader.uploadVideo(result.path!);
       state = state.copyWith(isRecording: false, videoPath: videoPath, isUploading: false);
     } else {
       timer.startTimer();
       await Future.delayed(const Duration(seconds: 10));
-      // if(timer.state.currentTime == 0) {
       await state.controller!.startVideoRecording();
       state = state.copyWith(isRecording: true);
-      // }
     }
   }
 
@@ -93,14 +88,6 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
         (camera) => camera.lensDirection != state.controller!.description.lensDirection,
         orElse: () => cameras!.first);
     _setCamera(newCamera);
-  }
-
-  Future<void> uploadVideo(String path) async {
-    try {
-      await FirebaseStorage.instance.ref('video/${basename(path)}').putFile(File(path));
-    } on FirebaseException catch (e) {
-      log(e.toString());
-    }
   }
 
   @override

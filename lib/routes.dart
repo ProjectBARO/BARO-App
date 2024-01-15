@@ -46,17 +46,15 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
     routes: <RouteBase>[
       GoRoute(
         path: '/main',
-        parentNavigatorKey: _shellNavigatorKey,
         pageBuilder: (context, state) => const NoTransitionPage(child: MainScreen()),
       ),
       GoRoute(
         path: '/calendar',
-        parentNavigatorKey: _shellNavigatorKey,
         pageBuilder: (context, state) => const NoTransitionPage(child: CalendarScreen()),
       ),
       GoRoute(
-          path: '/youtube',
-          pageBuilder: (context, state) => const NoTransitionPage(child: YoutubeScreen()),
+        path: '/youtube',
+        pageBuilder: (context, state) => const NoTransitionPage(child: YoutubeScreen()),
       ),
       GoRoute(
         path: '/information',

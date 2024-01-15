@@ -1,11 +1,12 @@
 import 'package:baro_project/models/user.dart';
+import 'package:baro_project/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import '../widgets/intro_view.dart';
-import '../provider/auth_provider.dart';
+import '../provider/user_provider.dart';
 
 class Login extends ConsumerStatefulWidget {
   const Login({super.key});
