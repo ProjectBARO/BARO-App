@@ -1,27 +1,37 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:typed_data';
+import 'package:baro_project/provider/classify_provider.dart';
+import 'package:baro_project/service/image_converter.dart';
 import 'package:baro_project/service/video_compressor.dart';
 import 'package:baro_project/service/video_uploader.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../models/camera.dart';
 import 'timer_provider.dart';
 
-final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>(
-    (ref) => CameraNotifier(videoCompressor: VideoCompressor(), videoUploader: VideoUploader()));
+final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>((ref) => CameraNotifier(
+    videoCompressor: VideoCompressor(),
+    videoUploader: VideoUploader(),
+    screenshotController: ref.watch(screenshotProvider)));
 final pauseProvider = StateProvider<bool>((ref) => false);
+final screenshotProvider = Provider<ScreenshotController>((ref) => ScreenshotController());
 
 class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObserver {
   final VideoCompressor videoCompressor;
   final VideoUploader videoUploader;
+  final ScreenshotController screenshotController;
 
-  CameraNotifier({required this.videoCompressor, required this.videoUploader}) : super(CameraState()) {
+  CameraNotifier({required this.videoCompressor, required this.videoUploader, required this.screenshotController})
+      : super(CameraState()) {
     WidgetsBinding.instance.addObserver(this);
     _initCamera();
   }
 
   List<CameraDescription>? cameras;
+  ImageConverter converter = ImageConverter();
 
   Future<void> _initCamera() async {
     cameras = await availableCameras();
@@ -69,6 +79,17 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
       await Future.delayed(const Duration(seconds: 10));
       await state.controller!.startVideoRecording();
       state = state.copyWith(isRecording: true);
+
+      Timer.periodic(const Duration(seconds: 5), (timer) async {
+        if (!state.isRecording) {
+          timer.cancel();
+        } else {
+          screenshotController.capture().then((capturedImage) {
+            Float32List imgData = converter.convertImage(capturedImage!);
+            ref.watch(classifyProvider.notifier).predict(imgData);
+          });
+        }
+      });
     }
   }
 
