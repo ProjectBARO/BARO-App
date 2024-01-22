@@ -1,10 +1,13 @@
 import 'package:baro_project/provider/camera_provider.dart';
+import 'package:baro_project/provider/classify_provider.dart';
 import 'package:baro_project/widgets/app_bar_back.dart';
+import 'package:baro_project/widgets/classify_toast.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../provider/timer_provider.dart';
 
@@ -52,7 +55,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
       body: Stack(
         children: <Widget>[
           cameraState.controller != null && cameraState.controller!.value.isInitialized
-              ? CameraPreview(cameraState.controller!)
+              ? Screenshot(controller: ref.watch(screenshotProvider), child: CameraPreview(cameraState.controller!))
               : const Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -75,6 +78,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
                 style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
               ),
             ),
+          const ClassifyToast(),  
           if (cameraState.isCompressing || cameraState.isUploading)
             const Center(
               child: CircularProgressIndicator(),

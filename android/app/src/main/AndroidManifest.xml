@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.quadcore.baro_project">
 
     <uses-permission android:name="android.permission.CAMERA"/>
-    
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
         android:label="baro_project"
         android:name="${applicationName}"

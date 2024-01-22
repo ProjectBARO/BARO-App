@@ -43,12 +43,19 @@ dependencies:
   path: ^1.8.3
   http: ^1.1.0
   camera: ^0.10.5+8
+  screenshot: ^2.1.0
+  vibration: ^1.8.4
   image: ^4.1.4
   video_compress: 3.1.1
-  tflite_flutter: ^0.10.4
+  tflite_flutter: ^0.9.5
+  tflite_flutter_helper:
+    git:
+      url: https://github.com/pnyompen/tflite_flutter_helper.git
+      ref: 43e87d4b9627539266dc20250beb35bf36320dce
   flutter_dotenv: ^5.1.0
   font_awesome_flutter: ^10.6.0
   smooth_page_indicator: ^1.1.0
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:
