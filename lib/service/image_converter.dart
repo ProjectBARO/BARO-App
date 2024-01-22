@@ -1,20 +1,22 @@
 import 'dart:typed_data';
-
-import 'package:camera/camera.dart';
-import 'package:image/image.dart' as imglib;
-
-const shift = (0xFF << 24);
+import 'package:image/image.dart' as imagelib;
 
 class ImageConverter {
-  static imglib.Image? convertJpegToImage(Uint8List img) {
-    imglib.Image? convertedImage = imglib.decodeImage(img);
-    return convertedImage;
-  }
+  static const int INPUT_SIZE = 28;
+  Float32List convertImage(Uint8List img) {
+    imagelib.Image? image = imagelib.decodeImage(img);
+    imagelib.Image rgbImage = imagelib.copyResize(image!, width: INPUT_SIZE, height: INPUT_SIZE);
 
-  static Future<Uint8List?> convertXFileToJpeg(XFile file) async {
-    final byteData = await file.readAsBytes();
-    imglib.Image? image = imglib.decodeImage(byteData);
-    Uint8List jpeg = imglib.encodeJpg(image!);
-    return jpeg;
+    var imgData = Float32List(INPUT_SIZE * INPUT_SIZE * 3);
+    int index = 0;
+    for (var x = 0; x < INPUT_SIZE; x++) {
+      for (var y = 0; y < INPUT_SIZE; y++) {
+        var pixel = rgbImage.getPixelSafe(x, y);
+        imgData[index++] = pixel.r / 255.0; // Red
+        imgData[index++] = pixel.g / 255.0; // Green
+        imgData[index++] = pixel.b / 255.0; // Blue
+      }
+    }
+    return imgData;
   }
 }
