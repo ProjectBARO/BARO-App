@@ -1,3 +1,4 @@
+import 'package:baro_project/provider/video_provider.dart';
 import 'package:baro_project/widgets/app_bar_back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,14 @@ class CategoryScreen extends ConsumerStatefulWidget {
 }
 
 class CategoryState extends ConsumerState<CategoryScreen> {
+  final TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +35,9 @@ class CategoryState extends ConsumerState<CategoryScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _textEditingController.value = const TextEditingValue(text: '공부');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffDAEDFF),
                   ),
@@ -34,7 +45,9 @@ class CategoryState extends ConsumerState<CategoryScreen> {
                 ),
                 const SizedBox(width: 20.0),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _textEditingController.value = const TextEditingValue(text: '근무');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffDAEDFF),
                   ),
@@ -45,20 +58,24 @@ class CategoryState extends ConsumerState<CategoryScreen> {
             const SizedBox(height: 20.0),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.4,
-              child: const TextField(
-                decoration: InputDecoration(
+              child: TextField(
+                controller: _textEditingController,
+                decoration: const InputDecoration(
                   hintText: 'ex: 공부, 프로젝트 등',
                 ),
               ),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () => context.push('/category/guide'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xffDAEDFF),
-              ),
-              child: const Text("다음", style: TextStyle(color: Colors.black))
-            ),
+                onPressed: () {
+                  String type = _textEditingController.text;
+                  ref.read(videoProvider.notifier).setType(type);
+                  context.push('/category/guide');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xffDAEDFF),
+                ),
+                child: const Text("다음", style: TextStyle(color: Colors.black))),
           ],
         ),
       ),
