@@ -1,5 +1,4 @@
 import 'package:baro_project/provider/camera_provider.dart';
-import 'package:baro_project/provider/classify_provider.dart';
 import 'package:baro_project/widgets/app_bar_back.dart';
 import 'package:baro_project/widgets/classify_toast.dart';
 import 'package:camera/camera.dart';
@@ -28,7 +27,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
     List<Widget> actionButtons = [
       FloatingActionButton(
         heroTag: "Start and Stop",
-        onPressed: () => ref.watch(cameraProvider.notifier).startStopRecording(ref),
+        onPressed: () => ref.watch(cameraProvider.notifier).startStopRecording(ref, context),
         child: FaIcon(cameraState.isRecording ? FontAwesomeIcons.stop : FontAwesomeIcons.play),
       ),
       const SizedBox(width: 10.0),

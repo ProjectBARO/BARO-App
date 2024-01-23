@@ -3,7 +3,7 @@ import 'package:image/image.dart' as imagelib;
 
 class ImageConverter {
   static const int INPUT_SIZE = 28;
-  Float32List convertImage(Uint8List img) {
+  static Float32List convertImage(Uint8List img) {
     imagelib.Image? image = imagelib.decodeImage(img);
     imagelib.Image rgbImage = imagelib.copyResize(image!, width: INPUT_SIZE, height: INPUT_SIZE);
 

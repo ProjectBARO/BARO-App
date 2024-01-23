@@ -8,6 +8,7 @@ import 'package:baro_project/service/video_uploader.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
 import '../models/camera.dart';
 import 'timer_provider.dart';
@@ -31,7 +32,6 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   }
 
   List<CameraDescription>? cameras;
-  ImageConverter converter = ImageConverter();
 
   Future<void> _initCamera() async {
     cameras = await availableCameras();
@@ -53,6 +53,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     CameraController controller = CameraController(
       cameraDescription,
       ResolutionPreset.low,
+      enableAudio: false,
     );
 
     try {
@@ -63,17 +64,22 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     }
   }
 
-  Future<void> startStopRecording(WidgetRef ref) async {
+  Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
     final timer = ref.watch(timerProvider.notifier);
     if (state.isRecording) {
       XFile videoFile = await state.controller!.stopVideoRecording();
       String videoPath = videoFile.path;
-      state = state.copyWith(isCompressing: true);
-      final result = await videoCompressor.compressVideo(videoPath);
-      videoPath = result!.path!;
-      state = state.copyWith(isCompressing: false, isUploading: true);
-      await videoUploader.uploadVideo(result.path!);
-      state = state.copyWith(isRecording: false, videoPath: videoPath, isUploading: false);
+      _processingVideo(videoPath).then((result) {
+        if (result) {
+          log("동영상 처리 완료");
+        } else {
+          log("동영상 처리 실패");
+        }
+      });
+      if (mounted) {
+        context.go('/result');
+      }
+      state = state.copyWith(isRecording: false, videoPath: videoPath);
     } else {
       timer.startTimer();
       await Future.delayed(const Duration(seconds: 10));
@@ -85,11 +91,49 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
           timer.cancel();
         } else {
           screenshotController.capture().then((capturedImage) {
-            Float32List imgData = converter.convertImage(capturedImage!);
+            Float32List imgData = ImageConverter.convertImage(capturedImage!);
             ref.watch(classifyProvider.notifier).predict(imgData);
           });
         }
       });
+    }
+  }
+
+  Future<bool> _processingVideo(String videoPath) async {
+    String compressedVideoPath = await _compressVideo(videoPath);
+    if (compressedVideoPath.isEmpty) {
+      log("압축 실패");
+      return false;
+    }
+    bool uploadResult = await _uploadVideo(compressedVideoPath);
+    if (!uploadResult) {
+      log("업로드 실패");
+      return false;
+    }
+    return true;
+  }
+
+  Future<String> _compressVideo(String videoPath) async {
+    try {
+      state = state.copyWith(isCompressing: true);
+      final result = await videoCompressor.compressVideo(videoPath);
+      state = state.copyWith(isCompressing: false);
+      return result!.path!;
+    } catch (e) {
+      log(e.toString());
+      return "";
+    }
+  }
+
+  Future<bool> _uploadVideo(String videoPath) async {
+    try {
+      state = state.copyWith(isUploading: true);
+      await videoUploader.uploadVideo(videoPath);
+      state = state.copyWith(isUploading: false);
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
     }
   }
 
