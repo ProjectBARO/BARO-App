@@ -7,6 +7,7 @@ class CameraState {
   String? videoPath;
   bool isCompressing = false;
   bool isUploading = false;
+  String? videoUrl;
 
   CameraState({
     this.controller,
@@ -15,6 +16,7 @@ class CameraState {
     this.videoPath,
     this.isCompressing = false,
     this.isUploading = false,
+    this.videoUrl,
   });
 
   CameraState copyWith({
@@ -24,6 +26,7 @@ class CameraState {
     String? videoPath,
     bool? isCompressing,
     bool? isUploading,
+    String? videoUrl,
   }) {
     return CameraState(
       controller: controller ?? this.controller,
@@ -32,6 +35,7 @@ class CameraState {
       videoPath: videoPath ?? this.videoPath,
       isCompressing: isCompressing ?? this.isCompressing,
       isUploading: isUploading ?? this.isUploading,
+      videoUrl: videoUrl ?? this.videoUrl,
     );
   }
 }

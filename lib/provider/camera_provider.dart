@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:typed_data';
-import 'package:baro_project/provider/classify_provider.dart';
+import 'package:baro_project/provider/classifier_provider.dart';
+import 'package:baro_project/provider/video_provider.dart';
 import 'package:baro_project/service/image_converter.dart';
 import 'package:baro_project/service/video_compressor.dart';
 import 'package:baro_project/service/video_uploader.dart';
@@ -66,20 +67,27 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
 
   Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
     final timer = ref.watch(timerProvider.notifier);
+    final classifier = ref.read(classifierProvider.notifier);
+    final video = ref.read(videoProvider.notifier);
     if (state.isRecording) {
       XFile videoFile = await state.controller!.stopVideoRecording();
-      String videoPath = videoFile.path;
-      _processingVideo(videoPath).then((result) {
+      int count = classifier.state.alertCount;
+      video.setAnalysisTime(videoFile.path);
+      _processingVideo(videoFile.path).then((result) async {
         if (result) {
+          await Future(() async {
+            video.setVideoInfo(state.videoUrl!, count);
+            await video.uploadVideoInfo();
+          });
           log("동영상 처리 완료");
         } else {
           log("동영상 처리 실패");
         }
       });
       if (mounted) {
-        context.go('/result');
+        context.push('/category/guide/camera/result');
       }
-      state = state.copyWith(isRecording: false, videoPath: videoPath);
+      state = state.copyWith(isRecording: false, videoPath: videoFile.path);
     } else {
       timer.startTimer();
       await Future.delayed(const Duration(seconds: 10));
@@ -92,7 +100,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
         } else {
           screenshotController.capture().then((capturedImage) {
             Float32List imgData = ImageConverter.convertImage(capturedImage!);
-            ref.watch(classifyProvider.notifier).predict(imgData);
+            classifier.predict(imgData);
           });
         }
       });
@@ -128,8 +136,8 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   Future<bool> _uploadVideo(String videoPath) async {
     try {
       state = state.copyWith(isUploading: true);
-      await videoUploader.uploadVideo(videoPath);
-      state = state.copyWith(isUploading: false);
+      String url = await videoUploader.uploadVideo(videoPath);
+      state = state.copyWith(isUploading: false, videoUrl: url);
       return true;
     } catch (e) {
       log(e.toString());
