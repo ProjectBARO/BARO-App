@@ -47,7 +47,7 @@ class AuthService {
 
   Future<String> getToken(User user) async {
     final response = await http.post(
-      Uri.parse(dotenv.get('SERVER_URL')),
+      Uri.parse('${dotenv.get('SERVER_URL')}/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

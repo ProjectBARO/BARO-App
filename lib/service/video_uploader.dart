@@ -4,11 +4,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
 class VideoUploader {
-  Future<void> uploadVideo(String path) async {
+  Future<String> uploadVideo(String path) async {
     try {
       await FirebaseStorage.instance.ref('video/${basename(path)}').putFile(File(path));
+      String downloadURL = await FirebaseStorage.instance.ref('video/${basename(path)}').getDownloadURL();
+      return downloadURL;
     } on FirebaseException catch (e) {
       log(e.toString());
+      return '';
     }
   }
 }

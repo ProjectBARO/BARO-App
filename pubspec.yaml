@@ -47,6 +47,7 @@ dependencies:
   vibration: ^1.8.4
   image: ^4.1.4
   video_compress: 3.1.1
+  video_player: ^2.7.2
   tflite_flutter: ^0.9.5
   tflite_flutter_helper:
     git:
@@ -62,6 +63,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  test: ^1.24.9
 
 flutter:
 

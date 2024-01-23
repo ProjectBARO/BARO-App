@@ -77,7 +77,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
                 style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
               ),
             ),
-          const ClassifyToast(),  
+          const ClassifyToast(), 
           if (cameraState.isCompressing || cameraState.isUploading)
             const Center(
               child: CircularProgressIndicator(),
