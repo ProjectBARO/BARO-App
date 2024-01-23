@@ -10,6 +10,7 @@ import 'screens/camera_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/noti_screen.dart';
+import 'screens/result_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Shell');
@@ -31,6 +32,12 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
         GoRoute(
           path: 'camera',
           builder: (context, state) => const CameraScreen(),
+          routes: [
+            GoRoute(
+              path: 'result',
+              builder: (context, state) => const ResultScreen(),
+            ),
+          ],
         )
       ]
     ),
