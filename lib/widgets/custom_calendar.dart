@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../models/calendar.dart';
+import '../provider/calendar_provider.dart';
 
 class CustomCalendar extends ConsumerStatefulWidget {
   const CustomCalendar({super.key});
@@ -13,6 +15,16 @@ class CustomCalendarState extends ConsumerState<CustomCalendar> {
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DateTime now = DateTime.now();
+      int date = int.parse('${now.year}${now.month.toString().padLeft(2, '0')}');
+      ref.read(calendarProvider(date));
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
@@ -27,6 +39,10 @@ class CustomCalendarState extends ConsumerState<CustomCalendar> {
       calendarStyle: const CalendarStyle(
         isTodayHighlighted: false,
         selectedDecoration: BoxDecoration(color: Color(0xff3492E8), shape: BoxShape.circle),
+        markerDecoration: BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
+        markerSize: 5.0,
+        markerMargin: EdgeInsets.only(top: 5.0),
+        weekendTextStyle: TextStyle(color: Colors.red),
       ),
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
@@ -38,9 +54,20 @@ class CustomCalendarState extends ConsumerState<CustomCalendar> {
         if (_selectedDay == null) {
           return false;
         }
-        return date.year == _selectedDay!.year &&
-            date.month == _selectedDay!.month &&
-            date.day == _selectedDay!.day;
+        return date.year == _selectedDay!.year && date.month == _selectedDay!.month && date.day == _selectedDay!.day;
+      },
+      onPageChanged: (focusedDay) {
+        int date = int.parse('${focusedDay.year}${focusedDay.month.toString().padLeft(2, '0')}');
+        ref.read(calendarProvider(date));
+      },
+      eventLoader: (day) {
+        int month = int.parse('${day.year}${day.month.toString().padLeft(2, '0')}');
+        final monthEvents = ref.read(calendarDataProvider)[month];
+        if (monthEvents != null) {
+          final dayEvents = monthEvents.where((event) => event.createdAt!.day == day.day).toList();
+          return dayEvents.isNotEmpty ? [dayEvents[0]] : <Calendar>[];
+        }
+        return <Calendar>[];
       },
     );
   }
