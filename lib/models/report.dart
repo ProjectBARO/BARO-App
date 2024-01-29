@@ -5,6 +5,11 @@ class Report {
   int? analysisTime;
   String? predict;
   String? type;
+  String? score;
+  String? normalRatio;
+  String? neckAngles;
+  String? distances;
+  String? statusFrequencies;
 
   Report({
     this.id,
@@ -13,6 +18,11 @@ class Report {
     this.analysisTime,
     this.predict,
     this.type,
+    this.score,
+    this.normalRatio,
+    this.neckAngles,
+    this.distances,
+    this.statusFrequencies,
   });
 
   factory Report.fromJson(Map<String, dynamic> json) {
@@ -23,6 +33,11 @@ class Report {
       analysisTime: json['analysis_time'] as int?,
       predict: json['predict'] as String?,
       type: json['type'] as String?,
+      score: json['score'] as String?,
+      normalRatio: json['normal_ratio'] as String?,
+      neckAngles: json['neck_angles'] as String?,
+      distances: json['distances'] as String?,
+      statusFrequencies: json['status_frequencies'] as String?,
     );
   }
 }
