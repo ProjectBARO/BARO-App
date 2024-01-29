@@ -25,9 +25,12 @@ final calendarProvider = FutureProvider.family<List<Calendar>, int>((ref, date) 
   }
 
   final calendarService = ref.read(calendarServiceProvider);
-  final calendars = await calendarService.getCalendars(date);
 
-  ref.watch(calendarDataProvider.notifier).addData(date, calendars!);
-
-  return calendars;
+  try {
+    final calendars = await calendarService.getCalendars(date);
+    ref.watch(calendarDataProvider.notifier).addData(date, calendars!);
+    return calendars;
+  } catch (_) {
+    return <Calendar>[];
+  }
 });

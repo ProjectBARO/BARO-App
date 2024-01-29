@@ -33,30 +33,6 @@ class CustomCalendarState extends ConsumerState<CustomCalendar> {
 
     return calendarData.when(
       data: (calendars) {
-        if (calendars.isEmpty) {
-          return TableCalendar(
-            locale: 'ko_KR',
-            firstDay: DateTime(2024),
-            lastDay: DateTime(2034),
-            focusedDay: _focusedDay,
-            headerStyle: headerStyle,
-            calendarStyle: calendarStyle,
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = selectedDay;
-              });
-            },
-            selectedDayPredicate: (date) {
-              if (_selectedDay == null) {
-                return false;
-              }
-              return date.year == _selectedDay!.year &&
-                  date.month == _selectedDay!.month &&
-                  date.day == _selectedDay!.day;
-            },
-          );
-        }
         return TableCalendar(
           locale: 'ko_KR',
           firstDay: DateTime(2024),
@@ -84,9 +60,6 @@ class CustomCalendarState extends ConsumerState<CustomCalendar> {
             ref.read(calendarProvider(date));
           },
           eventLoader: (day) {
-            if (calendars.isEmpty) {
-              return <Calendar>[];
-            }
             int month = int.parse('${day.year}${day.month.toString().padLeft(2, '0')}');
             final monthEvents = ref.read(calendarDataProvider)[month];
             if (monthEvents != null) {

@@ -16,18 +16,16 @@ class CalendarService {
     if (response.statusCode == 200) {
       var body = jsonDecode(response.body);
       if (body['data'] != null) {
-        log('레포트 데이터 로드 성공');
         List<Calendar> calendars =
             (body['data'] as List).map((i) => Calendar.fromJson(i as Map<String, dynamic>)).toList();
         return calendars;
       } else {
-        log('데이터가 존재하지 않습니다.');
+        return <Calendar>[];
       }
     } else {
-      log('레포트 데이터 로드 실패: ${response.statusCode}');
+      log("데이터 로드 실패 : ${response.statusCode}");
       return null;
     }
-    return null;
   }
 
   Future<Report?> getReport(int id) async {

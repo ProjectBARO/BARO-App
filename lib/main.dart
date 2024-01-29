@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'BARO',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white, useMaterial3: true, fontFamily: 'NotoSans'),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white, fontFamily: 'NotoSans'),
       routerConfig: router,
     );
   }

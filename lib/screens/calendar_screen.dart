@@ -1,19 +1,33 @@
-import 'package:baro_project/widgets/custom_calendar.dart';
+import 'package:baro_project/provider/date_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../widgets/custom_calendar.dart';
+import '../widgets/report_card.dart';
 
 class CalendarScreen extends ConsumerWidget {
   const CalendarScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const PopScope(
+    String formattedDate = DateFormat('yyyy년 MM월 dd일').format(ref.watch(dateProvider));
+    return PopScope(
       canPop: false,
       child: Scaffold(
         body: Center(
           child: Column(
             children: [
-              CustomCalendar(),
+              const CustomCalendar(),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(formattedDate, style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500)),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.06),
+              const ReportCard(),
             ],
           ),
         )

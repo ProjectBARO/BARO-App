@@ -10,6 +10,7 @@ import 'screens/camera_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/noti_screen.dart';
+import 'screens/report_screen.dart';
 import 'screens/result_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Root');
@@ -42,14 +43,13 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
       ]
     ),
   ]),
+  GoRoute(
+    path: '/report',
+    builder: (context, state) => const ReportScreen(),
+  ),
   ShellRoute(
     navigatorKey: _shellNavigatorKey,
     builder: (context, state, child) => NavBarWidget(child: child),
-    // pageBuilder: (context, state, child) {
-    //   return NoTransitionPage(
-    //     child: NavBarWidget(child: child),
-    //   );
-    // },
     routes: <RouteBase>[
       GoRoute(
         path: '/main',

@@ -19,3 +19,5 @@ final reportProvider = FutureProvider.family<List<Report>, DateTime>((ref, selec
 
   return reports;
 });
+
+final selectedReportProvider = StateProvider<Report?>((ref) => null);
