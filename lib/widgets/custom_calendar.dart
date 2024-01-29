@@ -1,3 +1,5 @@
+import 'package:baro_project/provider/date_provider.dart';
+import 'package:baro_project/util/calendar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -19,56 +21,84 @@ class CustomCalendarState extends ConsumerState<CustomCalendar> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      DateTime now = DateTime.now();
-      int date = int.parse('${now.year}${now.month.toString().padLeft(2, '0')}');
+      int date = int.parse('${_focusedDay.year}${_focusedDay.month.toString().padLeft(2, '0')}');
       ref.read(calendarProvider(date));
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return TableCalendar(
-      locale: 'ko_KR',
-      firstDay: DateTime(2024),
-      lastDay: DateTime(2034),
-      focusedDay: _focusedDay,
-      headerStyle: const HeaderStyle(
-          titleCentered: true,
-          formatButtonVisible: false,
-          titleTextStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 20.0)),
-      calendarStyle: const CalendarStyle(
-        isTodayHighlighted: false,
-        selectedDecoration: BoxDecoration(color: Color(0xff3492E8), shape: BoxShape.circle),
-        markerDecoration: BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
-        markerSize: 5.0,
-        markerMargin: EdgeInsets.only(top: 5.0),
-        weekendTextStyle: TextStyle(color: Colors.red),
-      ),
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          _selectedDay = selectedDay;
-          _focusedDay = selectedDay;
-        });
-      },
-      selectedDayPredicate: (date) {
-        if (_selectedDay == null) {
-          return false;
+    int date = int.parse("${_focusedDay.year}${_focusedDay.month.toString().padLeft(2, '0')}");
+    final calendarData = ref.watch(calendarProvider(date));
+
+    return calendarData.when(
+      data: (calendars) {
+        if (calendars.isEmpty) {
+          return TableCalendar(
+            locale: 'ko_KR',
+            firstDay: DateTime(2024),
+            lastDay: DateTime(2034),
+            focusedDay: _focusedDay,
+            headerStyle: headerStyle,
+            calendarStyle: calendarStyle,
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = selectedDay;
+              });
+            },
+            selectedDayPredicate: (date) {
+              if (_selectedDay == null) {
+                return false;
+              }
+              return date.year == _selectedDay!.year &&
+                  date.month == _selectedDay!.month &&
+                  date.day == _selectedDay!.day;
+            },
+          );
         }
-        return date.year == _selectedDay!.year && date.month == _selectedDay!.month && date.day == _selectedDay!.day;
+        return TableCalendar(
+          locale: 'ko_KR',
+          firstDay: DateTime(2024),
+          lastDay: DateTime(2034),
+          focusedDay: _focusedDay,
+          headerStyle: headerStyle,
+          calendarStyle: calendarStyle,
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = selectedDay;
+            });
+            ref.read(dateProvider.notifier).update(selectedDay);
+          },
+          selectedDayPredicate: (date) {
+            if (_selectedDay == null) {
+              return false;
+            }
+            return date.year == _selectedDay!.year &&
+                date.month == _selectedDay!.month &&
+                date.day == _selectedDay!.day;
+          },
+          onPageChanged: (focusedDay) {
+            int date = int.parse('${focusedDay.year}${focusedDay.month.toString().padLeft(2, '0')}');
+            ref.read(calendarProvider(date));
+          },
+          eventLoader: (day) {
+            if (calendars.isEmpty) {
+              return <Calendar>[];
+            }
+            int month = int.parse('${day.year}${day.month.toString().padLeft(2, '0')}');
+            final monthEvents = ref.read(calendarDataProvider)[month];
+            if (monthEvents != null) {
+              final dayEvents = monthEvents.where((event) => event.createdAt!.day == day.day).toList();
+              return dayEvents.isNotEmpty ? [dayEvents[0]] : <Calendar>[];
+            }
+            return <Calendar>[];
+          },
+        );
       },
-      onPageChanged: (focusedDay) {
-        int date = int.parse('${focusedDay.year}${focusedDay.month.toString().padLeft(2, '0')}');
-        ref.read(calendarProvider(date));
-      },
-      eventLoader: (day) {
-        int month = int.parse('${day.year}${day.month.toString().padLeft(2, '0')}');
-        final monthEvents = ref.read(calendarDataProvider)[month];
-        if (monthEvents != null) {
-          final dayEvents = monthEvents.where((event) => event.createdAt!.day == day.day).toList();
-          return dayEvents.isNotEmpty ? [dayEvents[0]] : <Calendar>[];
-        }
-        return <Calendar>[];
-      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => const Text('레포트 데이터가 존재하지 않습니다.'),
     );
   }
 }
