@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:baro_project/models/user.dart';
 import 'package:baro_project/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +25,12 @@ class LoginState extends ConsumerState<Login> {
     String? accessToken = await storage.read(key: "accessToken");
     if (accessToken != null) {
       if (!mounted) return;
-      GoRouter.of(context).go('/main');
+      ref.read(authProvider).getUserInfo(accessToken).then((User? user) {
+        ref.read(userProvider.notifier).setUser(user);
+        GoRouter.of(context).go('/main');
+        FlutterNativeSplash.remove();
+        log("유저 정보 호출 성공");
+      });
     }
   }
 

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../models/user.dart';
 
 final authProvider = Provider<AuthService>((ref) => AuthService());
+
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
@@ -59,6 +60,20 @@ class AuthService {
       return jsonDecode(response.body)['data']['token'];
     } else {
       throw Exception('Failed to obtain token.');
+    }
+  }
+
+  Future<User?> getUserInfo(String accessToken) async {
+    final response = await http.get(
+      Uri.parse('${dotenv.get('SERVER_URL')}/users/me'),
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      return User.fromJson(data);
+    } else {
+      throw Exception('Failed to obtain user info.');
     }
   }
 
