@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -47,13 +49,20 @@ class AuthService {
   }
 
   Future<String> getToken(User user) async {
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    log(fcmToken!);
     final response = await http.post(
       Uri.parse('${dotenv.get('SERVER_URL')}/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(
-          <String, dynamic>{'age': user.birthday, 'email': user.email, 'gender': user.gender, 'name': user.name}),
+      body: jsonEncode(<String, dynamic>{
+        'age': user.birthday,
+        'email': user.email,
+        'gender': user.gender,
+        'name': user.name,
+        'fcm_token': fcmToken
+      }),
     );
 
     if (response.statusCode == 200) {
@@ -77,8 +86,7 @@ class AuthService {
     }
   }
 
-  Future<void> storeToken(String accessToken, String refreshToken) async {
+  Future<void> storeToken(String accessToken) async {
     await storage.write(key: 'accessToken', value: accessToken);
-    await storage.write(key: 'refreshToken', value: refreshToken);
   }
 }

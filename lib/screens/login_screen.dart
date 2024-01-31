@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:baro_project/models/user.dart';
 import 'package:baro_project/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +27,8 @@ class LoginState extends ConsumerState<Login> {
         ref.read(userProvider.notifier).setUser(user);
         GoRouter.of(context).go('/main');
         FlutterNativeSplash.remove();
-        log("유저 정보 호출 성공");
+      }).catchError((error) {
+        FlutterNativeSplash.remove();
       });
     }
   }
@@ -68,7 +67,7 @@ class LoginState extends ConsumerState<Login> {
                     if (user != null) {
                       userState.setUser(user);
                       auth.getToken(userState.currentUser!).then((String token) {
-                        auth.storeToken(token, 'refreshToken');
+                        auth.storeToken(token);
                       });
                       GoRouter.of(context).go('/main');
                     } else {
