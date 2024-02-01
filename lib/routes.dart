@@ -61,7 +61,7 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
       ),
       GoRoute(
         path: '/youtube',
-        pageBuilder: (context, state) => const NoTransitionPage(child: YoutubeScreen()),
+        pageBuilder: (context, state) => NoTransitionPage(child: YoutubeScreen()),
       ),
       GoRoute(
         path: '/information',
