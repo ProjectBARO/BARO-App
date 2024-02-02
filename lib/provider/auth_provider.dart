@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,12 +44,11 @@ class AuthService {
 
   Future<void> signOut() async {
     await _googleSignIn.signOut();
-    storage.deleteAll();
+    await storage.deleteAll();
   }
 
   Future<String> getToken(User user) async {
     String? fcmToken = await FirebaseMessaging.instance.getToken();
-    log(fcmToken!);
     final response = await http.post(
       Uri.parse('${dotenv.get('SERVER_URL')}/login'),
       headers: <String, String>{
@@ -84,6 +82,31 @@ class AuthService {
     } else {
       throw Exception('Failed to obtain user info.');
     }
+  }
+
+  Future<void> updateUserInfo(User user) async {
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.put(
+      Uri.parse('${dotenv.get('SERVER_URL')}/users/me'),
+      headers: {'Authorization': 'Bearer $accessToken'},
+      body: jsonEncode(user.toJson()),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update user info.');
+    }
+  }
+
+  Future<void> deleteUserInfo() async {
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http
+        .delete(Uri.parse('${dotenv.get('SERVER_URL')}/users/me'), headers: {'Authorization': 'Bearer $accessToken'});
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete user info.');
+    }
+    
+    await signOut();
   }
 
   Future<void> storeToken(String accessToken) async {
