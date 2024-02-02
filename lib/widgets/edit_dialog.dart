@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../models/user.dart';
 import '../provider/auth_provider.dart';
@@ -36,13 +36,22 @@ class _EditDialogState extends State<EditDialog> {
 
     return AlertDialog(
       title: Text("${widget.title} 수정"),
-      content: widget.title == "출생연도"
-          ? TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: widget.title,
-              ),
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      content: widget.title == "출생 연도"
+          ? ElevatedButton(
+              onPressed: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1923),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) {
+                  setState(() {
+                    controller.text = picked.year.toString();
+                  });
+                }
+              },
+              child: Text(controller.text, style: const TextStyle(color: Colors.black),),
             )
           : widget.title == "성별"
               ? DropdownButton<String>(
@@ -69,20 +78,20 @@ class _EditDialogState extends State<EditDialog> {
         TextButton(
           child: const Text("확인"),
           onPressed: () async {
-            User updatedUser =
-                widget.title == "성별" ? widget.user.copyWith(gender: getGenderToUpdate(gender)) : getUpdatedUser(widget.title, widget.user, controller);
+            User updatedUser = widget.title == "성별"
+                ? widget.user.copyWith(gender: getGenderToUpdate(gender))
+                : getUpdatedUser(widget.title, widget.user, controller);
             await authService.updateUserInfo(updatedUser).then((value) {
               widget.ref.read(userProvider.notifier).setUser(updatedUser);
-              Navigator.of(context).pop();
+              context.pop();
             });
           },
         ),
         TextButton(
           child: const Text("취소"),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
       ],
     );
   }
 }
-
