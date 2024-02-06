@@ -35,8 +35,9 @@ class AuthService {
       final String email = data['emailAddresses'][0]['value'];
       final String gender = data['genders'][0]['value'];
       final int birthday = data['birthdays'][0]['date']['year'];
+      final int age = DateTime.now().year - birthday + 1;
 
-      return User(email: email, name: name, birthday: birthday, gender: gender);
+      return User(email: email, name: name, age: age, gender: gender);
     } else {
       throw Exception('Failed to sign in with google');
     }
@@ -55,7 +56,7 @@ class AuthService {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, dynamic>{
-        'age': user.birthday,
+        'age': user.age,
         'email': user.email,
         'gender': user.gender,
         'name': user.name,
@@ -105,7 +106,7 @@ class AuthService {
     if (response.statusCode != 200) {
       throw Exception('Failed to delete user info.');
     }
-    
+
     await signOut();
   }
 
