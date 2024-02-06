@@ -30,7 +30,9 @@ class _EditDialogState extends State<EditDialog> {
     super.initState();
     controller = TextEditingController(text: widget.value);
     gender = getGender(widget.user.gender);
-    selectedValue = int.parse(controller.text);
+    if (widget.title == "나이") {
+      selectedValue = int.parse(controller.text);
+    }
   }
 
   @override
