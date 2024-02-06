@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 import '../models/user.dart';
 import '../provider/auth_provider.dart';
@@ -22,12 +23,14 @@ class EditDialog extends StatefulWidget {
 class _EditDialogState extends State<EditDialog> {
   late TextEditingController controller;
   String gender = '';
+  int selectedValue = 0;
 
   @override
   void initState() {
     super.initState();
     controller = TextEditingController(text: widget.value);
     gender = getGender(widget.user.gender);
+    selectedValue = int.parse(controller.text);
   }
 
   @override
@@ -36,22 +39,15 @@ class _EditDialogState extends State<EditDialog> {
 
     return AlertDialog(
       title: Text("${widget.title} 수정"),
-      content: widget.title == "출생 연도"
-          ? ElevatedButton(
-              onPressed: () async {
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1923),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) {
-                  setState(() {
-                    controller.text = picked.year.toString();
-                  });
-                }
-              },
-              child: Text(controller.text, style: const TextStyle(color: Colors.black),),
+      content: widget.title == "나이"
+          ? NumberPicker(
+              value: selectedValue,
+              minValue: 1,
+              maxValue: 100,
+              onChanged: (newValue) => setState(() {
+                selectedValue = newValue;
+                controller.text = newValue.toString();
+              }),
             )
           : widget.title == "성별"
               ? DropdownButton<String>(

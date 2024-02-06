@@ -20,7 +20,7 @@ class InformationScreen extends ConsumerWidget {
             buildInfoList('이메일', user?.email ?? '', context, ref),
             buildInfoList('닉네임', user?.nickname ?? '', context, ref, canEdit: true),
             buildInfoList('성별', getGender(user?.gender), context, ref, canEdit: true),
-            buildInfoList('출생연도', user?.birthday.toString() ?? '', context, ref, canEdit: true),
+            buildInfoList('나이', user?.age.toString() ?? '', context, ref, canEdit: true),
             SizedBox(height: MediaQuery.of(context).size.height * 0.2),
             Padding(
               padding: const EdgeInsets.all(16.0),

@@ -44,8 +44,8 @@ User getUpdatedUser(String title, User user, TextEditingController controller) {
   switch (title) {
     case "닉네임":
       return user.copyWith(nickname: controller.text);
-    case "출생 연도":
-      return user.copyWith(birthday: int.parse(controller.text));
+    case "나이":
+      return user.copyWith(age: int.parse(controller.text));
     case "성별":
       return user.copyWith(gender: controller.text);
     default:
