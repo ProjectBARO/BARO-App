@@ -1,3 +1,5 @@
+import 'package:baro_project/service/video/video.pb.dart';
+
 class YoutubeVideo {
   String id;
   String thumbnailUrl;
@@ -17,6 +19,15 @@ class YoutubeVideo {
       thumbnailUrl: json['thumbnail_url'] as String? ?? "",
       title: json['title'] as String? ?? "",
       category: json['category'] as String? ?? "",
+    );
+  }
+
+  static YoutubeVideo fromProto(VideoMessage proto) {
+    return YoutubeVideo(
+      id: proto.videoId,
+      thumbnailUrl: proto.thumbnailUrl,
+      title: proto.title,
+      category: proto.category,
     );
   }
 }  
