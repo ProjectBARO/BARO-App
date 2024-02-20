@@ -30,7 +30,7 @@ class ReportCard extends ConsumerWidget {
                   child: GestureDetector(
                       onTap: () {
                         ref.read(selectedReportProvider.notifier).state = reports[index];
-                        context.go('/report');
+                        context.push('/report');
                       },
                       child: Card(
                         elevation: 0,
@@ -46,7 +46,7 @@ class ReportCard extends ConsumerWidget {
                                   top: 10,
                                   right: 10,
                                   child: Text(
-                                    reports[index].score.toString(),
+                                    '${reports[index].score!.split('.').first}점',
                                     style: const TextStyle(fontSize: 40.0, fontWeight: FontWeight.w500),
                                   ),
                                 ),
