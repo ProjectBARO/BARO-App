@@ -26,13 +26,14 @@ class MainScreen extends StatelessWidget {
                     onPressed: () => context.push('/category'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff3492E8),
+                      minimumSize: Size(MediaQuery.of(context).size.width * 0.3, MediaQuery.of(context).size.height * 0.05),
                     ),
-                    child: const Text("측정하기", style: TextStyle(color: Colors.white),),
+                    child: const Text("측정하기", style: TextStyle(fontSize: 20.0, color: Colors.white),),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width*0.8,
+                      width: MediaQuery.of(context).size.width*0.9,
                       height: MediaQuery.of(context).size.height*0.3,
                       child: const DecoratedBox(
                         decoration: BoxDecoration(color: Color(0xffDAEDFF), borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -43,7 +44,7 @@ class MainScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
+                      width: MediaQuery.of(context).size.width * 0.9,
                       child: Stack(
                         alignment: Alignment.topLeft,
                         children: [
@@ -84,7 +85,7 @@ class MainScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(left: 50.0),
+                          padding: EdgeInsets.only(left: 25.0),
                           child: Text("스트레칭 맞춤 영상", style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w500)),
                         ),
                         GestureDetector(
