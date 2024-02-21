@@ -6,6 +6,7 @@ import 'package:baro_project/provider/video_provider.dart';
 import 'package:baro_project/service/image_converter.dart';
 import 'package:baro_project/service/video_compressor.dart';
 import 'package:baro_project/service/video_uploader.dart';
+import 'package:baro_project/widgets/loading_dialog.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,7 +57,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: false,
-    ); 
+    );
 
     try {
       await controller.initialize();
@@ -91,12 +92,17 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
 
   Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
     if (state.isRecording) {
-      _stopRecording(ref).then((value) => _setVideo(ref));
-      if (mounted) {
-        context.push('/result');
-      }
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => loadingDialog());
+      _stopRecording(ref).then((_) {
+        _setVideo(ref).then((_) {
+          context.go('/result');
+        });
+      });
     } else {
-      _startRecording(ref);
+      await _startRecording(ref);
     }
   }
 
@@ -119,17 +125,13 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     final video = ref.read(videoProvider.notifier);
     video.setAnalysisTime(state.videoPath!);
     video.setAlertCount(classifier.state.alertCount);
-    _processVideo(state.videoPath!).then((result) async {
-      if (result) {
-        await Future(() async {
-          video.setVideoInfo(state.videoUrl!);
-          await video.uploadVideoInfo();
-        });
-        log("동영상 처리 완료");
-      } else {
-        log("동영상 처리 실패");
-      }
-    });
+    bool result = await _processVideo(state.videoPath!);
+    if (result) {
+      await Future(() async {
+        video.setVideoInfo(state.videoUrl!);
+        await video.uploadVideoInfo();
+      });
+    }
   }
 
   void _captureController(bool isStart, WidgetRef ref) {

@@ -46,7 +46,7 @@ class ResultScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text("${userState?.name}님의",
+                        Text("${userState?.nickname}님의",
                             style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500)),
                         Text("시간 당 알림 받은 횟수는 총 ${videoState.alertCount}번이에요.",
                             style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500)),
