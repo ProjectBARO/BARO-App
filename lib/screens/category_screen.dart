@@ -29,8 +29,8 @@ class CategoryState extends ConsumerState<CategoryScreen> {
           children: <Widget>[
             const SizedBox(height: 50.0),
             const Text("바른 자세를 측정하는 동안\n작업할 유형을 선택하거나 적어주세요!",
-                textAlign: TextAlign.center, style: TextStyle(fontSize: 20.0)),
-            const SizedBox(height: 20.0),
+                textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0)),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.025),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -55,27 +55,38 @@ class CategoryState extends ConsumerState<CategoryScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20.0),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.025),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.4,
               child: TextField(
                 controller: _textEditingController,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 17.5, color: Colors.black),
                 decoration: const InputDecoration(
                   hintText: 'ex: 공부, 프로젝트 등',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    borderSide: BorderSide(color: Color(0xff3492EF)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    borderSide: BorderSide(color: Color(0xff3492EF)),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 20.0),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.025),
             ElevatedButton(
                 onPressed: () {
                   String type = _textEditingController.text;
                   ref.read(videoProvider.notifier).setType(type);
-                  context.push('/category/guide');
+                  context.push('/guide');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xffDAEDFF),
+                  minimumSize: Size(MediaQuery.of(context).size.width * 0.25, MediaQuery.of(context).size.height * 0.05),
                 ),
-                child: const Text("다음", style: TextStyle(color: Colors.black))),
+                child: const Text("다음", style: TextStyle(fontSize: 17.5, color: Colors.black))),
           ],
         ),
       ),

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -52,7 +50,7 @@ class CustomBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BarChart(BarChartData(
-        maxY: 10,
+        maxY: 100,
         barGroups: data.asMap().entries.map((entry) {
           return BarChartGroupData(
             showingTooltipIndicators: [0],
@@ -128,6 +126,5 @@ class CustomBarChart extends StatelessWidget {
 }
 
 List<int> stringToList(String str) {
-  log(str.substring(1, str.length - 1).split(' ').map((e) => int.parse(e.trim())).toList().toString());
   return str.substring(1, str.length - 1).split(' ').map((e) => int.parse(e.trim())).toList();
 }

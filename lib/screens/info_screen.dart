@@ -32,7 +32,7 @@ class InformationScreen extends ConsumerWidget {
                       await ref.read(authProvider).signOut().then((value) => context.go('/login'));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: const Color(0xffDAEDFF),
                       fixedSize: Size(MediaQuery.of(context).size.width*0.3, MediaQuery.of(context).size.height*0.05),
                     ),
                     child: const Text('로그아웃', style: TextStyle(color: Colors.black)),
@@ -40,7 +40,7 @@ class InformationScreen extends ConsumerWidget {
                   ElevatedButton(
                     onPressed: () => deleteDialog(context, ref),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: const Color(0xffDAEDFF),
                       fixedSize: Size(MediaQuery.of(context).size.width*0.3, MediaQuery.of(context).size.height*0.05),
                     ),
                     child: const Text('회원탈퇴', style: TextStyle(color: Colors.red)),

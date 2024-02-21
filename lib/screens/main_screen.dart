@@ -19,7 +19,7 @@ class MainScreen extends StatelessWidget {
                     child: Text(
                       "BARO와 함께\n공부, 작업 등 앉아있는 시간동안\n자세를 측정해보세요!", 
                       textAlign: TextAlign.center, 
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.0)
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)
                     ),
                   ),
                   ElevatedButton(

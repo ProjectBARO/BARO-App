@@ -1,3 +1,4 @@
+import 'package:baro_project/service/time_converter.dart';
 import 'package:baro_project/widgets/result_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +29,7 @@ class ResultScreen extends ConsumerWidget {
                       buildTextSpan('오늘은 '),
                       buildTextSpan('BARO', fontWeight: FontWeight.bold, color: const Color(0xff3492E8)),
                       buildTextSpan('와 함께\n'),
-                      buildTextSpan('총 ${formatAnalysisTime(videoState.analysisTime)}동안\n'),
+                      buildTextSpan('총 ${convertAnalysisTime(videoState.analysisTime)}동안\n'),
                       buildTextSpan('#${videoState.type}', color: const Color(0xff5200FF)),
                       buildTextSpan('했어요!')
                     ],
@@ -45,10 +46,13 @@ class ResultScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text("${userState?.name}님의", style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500)),
-                        Text("시간 당 알림 받은 횟수는 총 ${videoState.alertCount}번이에요.", style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500)),
+                        Text("${userState?.name}님의",
+                            style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500)),
+                        Text("시간 당 알림 받은 횟수는 총 ${videoState.alertCount}번이에요.",
+                            style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 20.0),
-                        const Text("보고서가 완성되면 24시간 이내로 알림을 줄게요.", style: TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500))
+                        const Text("보고서가 완성되면 24시간 이내로 알림을 줄게요.",
+                            style: TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500))
                       ],
                     ),
                   ),
@@ -63,7 +67,10 @@ class ResultScreen extends ConsumerWidget {
                         backgroundColor: const Color(0xffDAEDFF),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                       ),
-                      child: const Text('확인', style: TextStyle(color: Colors.black),),
+                      child: const Text(
+                        '확인',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                     const SizedBox(width: 20.0),
                     ElevatedButton(
@@ -79,17 +86,8 @@ class ResultScreen extends ConsumerWidget {
               ],
             ),
           ),
-        )
-      );
+        ));
   }
 
-  String formatAnalysisTime(int time) {
-    if (time < 60) {
-      return '$time초';
-    } else if (time < 3600) {
-      return '${time ~/ 60}분';
-    } else {
-      return '${time ~/ 3600}시간 ${time % 3600 ~/ 60}분';
-    }
-  }
+  
 }

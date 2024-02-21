@@ -21,7 +21,7 @@ class Classifier {
 class ClassifierNotifier extends StateNotifier<Classifier> {
   Interpreter? _interpreter;
 
-  static const String MODEL_FILE_NAME = "CNN_model.tflite";
+  static const String MODEL_FILE_NAME = "baro_model.tflite";
   static const int INPUT_SIZE = 28;
   // ImageProcessor? imageProcessor;
   // int? padSize;
@@ -68,6 +68,7 @@ class ClassifierNotifier extends StateNotifier<Classifier> {
     Float32List resultArray = output0.buffer.asFloat32List();
     bool turtleState = resultArray[0] > resultArray[1] ? true : false;
     state = state.copyWith(isTurtle: turtleState);
+    log("${resultArray[0]} ${resultArray[1]}");
     _increment();
   }
 

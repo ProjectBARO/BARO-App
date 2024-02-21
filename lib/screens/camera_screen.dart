@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../provider/timer_provider.dart';
 
@@ -19,6 +20,18 @@ class CameraScreen extends ConsumerStatefulWidget {
 
 class CameraScreenState extends ConsumerState<CameraScreen> {
   @override
+  void initState() {
+    super.initState();
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraProvider);
     final timerState = ref.watch(timerProvider);
@@ -28,65 +41,71 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
       FloatingActionButton(
         heroTag: "Start and Stop",
         onPressed: () => ref.watch(cameraProvider.notifier).startStopRecording(ref, context),
+        shape: const CircleBorder(),
         child: FaIcon(cameraState.isRecording ? FontAwesomeIcons.stop : FontAwesomeIcons.play),
       ),
-      const SizedBox(width: 10.0),
-      FloatingActionButton(
-        heroTag: "Pause and Resume",
-        onPressed: () => ref.watch(cameraProvider.notifier).pauseResumeRecording(ref),
-        child: FaIcon(isPause ? FontAwesomeIcons.play : FontAwesomeIcons.pause),
-      ),
-      const SizedBox(width: 10.0),
+      SizedBox(width: MediaQuery.of(context).size.width * 0.05),
     ];
+
+    if (cameraState.isRecording) {
+      actionButtons.add(
+        FloatingActionButton(
+          heroTag: "Pause and Resume",
+          onPressed: () => ref.watch(cameraProvider.notifier).pauseResumeRecording(ref),
+          shape: const CircleBorder(),
+          child: FaIcon(isPause ? FontAwesomeIcons.play : FontAwesomeIcons.pause),
+        ),
+      );
+    }
 
     if (!cameraState.isRecording) {
       actionButtons.add(
         FloatingActionButton(
           heroTag: "Switch Camera",
           onPressed: () => ref.watch(cameraProvider.notifier).switchCamera(),
+          shape: const CircleBorder(),
           child: const FaIcon(FontAwesomeIcons.rotate),
         ),
       );
     }
 
-    return Scaffold(
-      appBar: customAppBarBack(context, () => context.pop()),
-      body: Stack(
-        children: <Widget>[
-          cameraState.controller != null && cameraState.controller!.value.isInitialized
-              ? Screenshot(controller: ref.watch(screenshotProvider), child: CameraPreview(cameraState.controller!))
-              : const Center(
-                  child: CircularProgressIndicator(),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: customAppBarBack(context, () => context.pop()),
+        body: Stack(
+          children: <Widget>[
+            cameraState.controller != null && cameraState.controller!.value.isInitialized
+                ? Screenshot(
+                    controller: ref.watch(screenshotProvider),
+                    child: CameraPreview(cameraState.controller!, key: ValueKey(cameraState.controller)))
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+            if (timerState.currentTime > 0)
+              Center(
+                child: Text(
+                  "${timerState.currentTime}",
+                  style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
                 ),
-          // if (!cameraState.isRecording && timerState.currentTime == 0)
-          //   Positioned(
-          //     left: MediaQuery.of(context).size.width * 0.1,
-          //     right: MediaQuery.of(context).size.width * 0.1,
-          //     top: MediaQuery.of(context).size.height * 0.1,
-          //     bottom: MediaQuery.of(context).size.height * 0.1,
-          //     child: Image.asset(
-          //       'assets/images/frame.png',
-          //       width: MediaQuery.of(context).size.width * 0.5,
-          //       height: MediaQuery.of(context).size.height * 0.5,
-          //     ),
-          //   ),
-          if (timerState.currentTime > 0)
-            Center(
-              child: Text(
-                "${timerState.currentTime}",
-                style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
               ),
-            ),
-          const ClassifyToast(), 
-          if (cameraState.isCompressing || cameraState.isUploading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: actionButtons,
+            const ClassifyToast(),
+            if (cameraState.isCompressing || cameraState.isUploading)
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+          ],
+        ),
+        floatingActionButton: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: actionButtons,
+            )
+          ]
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }

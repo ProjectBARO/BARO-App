@@ -14,7 +14,7 @@ import 'package:screenshot/screenshot.dart';
 import '../models/camera.dart';
 import 'timer_provider.dart';
 
-final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>((ref) => CameraNotifier(
+final cameraProvider = StateNotifierProvider.autoDispose<CameraNotifier, CameraState>((ref) => CameraNotifier(
     videoCompressor: VideoCompressor(),
     videoUploader: VideoUploader(),
     screenshotController: ref.watch(screenshotProvider)));
@@ -25,6 +25,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   final VideoCompressor videoCompressor;
   final VideoUploader videoUploader;
   final ScreenshotController screenshotController;
+  Timer? captureTimer;
 
   CameraNotifier({required this.videoCompressor, required this.videoUploader, required this.screenshotController})
       : super(CameraState()) {
@@ -53,9 +54,9 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
 
     CameraController controller = CameraController(
       cameraDescription,
-      ResolutionPreset.low,
+      ResolutionPreset.medium,
       enableAudio: false,
-    );
+    ); 
 
     try {
       await controller.initialize();
@@ -65,36 +66,76 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     }
   }
 
+  @override
+  void dispose() {
+    _disposeController();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    final CameraController? cameraController = this.state.controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      await _disposeController();
+    }
+    if (state == AppLifecycleState.resumed) {
+      await _setCamera(cameraController.description);
+    }
+  }
+
   Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
-    final timer = ref.watch(timerProvider.notifier);
+    if (state.isRecording) {
+      _stopRecording(ref).then((value) => _setVideo(ref));
+      if (mounted) {
+        context.push('/result');
+      }
+    } else {
+      _startRecording(ref);
+    }
+  }
+
+  Future<void> _startRecording(WidgetRef ref) async {
+    ref.watch(timerProvider.notifier).startTimer();
+    await Future.delayed(const Duration(seconds: 10));
+    await state.controller!.startVideoRecording();
+    state = state.copyWith(isRecording: true);
+    _captureController(true, ref);
+  }
+
+  Future<void> _stopRecording(WidgetRef ref) async {
+    XFile videoFile = await state.controller!.stopVideoRecording();
+    _captureController(false, ref);
+    state = state.copyWith(isRecording: false, videoPath: videoFile.path);
+  }
+
+  Future<void> _setVideo(WidgetRef ref) async {
     final classifier = ref.read(classifierProvider.notifier);
     final video = ref.read(videoProvider.notifier);
-    if (state.isRecording) {
-      XFile videoFile = await state.controller!.stopVideoRecording();
-      int count = classifier.state.alertCount;
-      video.setAnalysisTime(videoFile.path);
-      _processingVideo(videoFile.path).then((result) async {
-        if (result) {
-          await Future(() async {
-            video.setVideoInfo(state.videoUrl!, count);
-            await video.uploadVideoInfo();
-          });
-          log("동영상 처리 완료");
-        } else {
-          log("동영상 처리 실패");
-        }
-      });
-      if (mounted) {
-        context.push('/category/guide/camera/result');
+    video.setAnalysisTime(state.videoPath!);
+    video.setAlertCount(classifier.state.alertCount);
+    _processVideo(state.videoPath!).then((result) async {
+      if (result) {
+        await Future(() async {
+          video.setVideoInfo(state.videoUrl!);
+          await video.uploadVideoInfo();
+        });
+        log("동영상 처리 완료");
+      } else {
+        log("동영상 처리 실패");
       }
-      state = state.copyWith(isRecording: false, videoPath: videoFile.path);
-    } else {
-      timer.startTimer();
-      await Future.delayed(const Duration(seconds: 10));
-      await state.controller!.startVideoRecording();
-      state = state.copyWith(isRecording: true);
+    });
+  }
 
-      Timer.periodic(const Duration(seconds: 5), (timer) async {
+  void _captureController(bool isStart, WidgetRef ref) {
+    final classifier = ref.read(classifierProvider.notifier);
+    if (isStart) {
+      captureTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
         if (!state.isRecording) {
           timer.cancel();
         } else {
@@ -104,16 +145,19 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
           });
         }
       });
+    } else {
+      captureTimer?.cancel();
     }
   }
 
-  Future<bool> _processingVideo(String videoPath) async {
-    String compressedVideoPath = await _compressVideo(videoPath);
-    if (compressedVideoPath.isEmpty) {
-      log("압축 실패");
-      return false;
-    }
-    bool uploadResult = await _uploadVideo(compressedVideoPath);
+  Future<bool> _processVideo(String videoPath) async {
+    // String compressedVideoPath = await _compressVideo(videoPath);
+    // if (compressedVideoPath.isEmpty) {
+    //   log("압축 실패");
+    //   return false;
+    // }
+    // bool uploadResult = await _uploadVideo(compressedVideoPath);
+    bool uploadResult = await _uploadVideo(videoPath);
     if (!uploadResult) {
       log("업로드 실패");
       return false;
@@ -149,8 +193,10 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     final pauseController = ref.watch(pauseProvider.notifier);
     if (pauseController.state) {
       await state.controller!.resumeVideoRecording();
+      _captureController(true, ref);
     } else {
       await state.controller!.pauseVideoRecording();
+      _captureController(false, ref);
     }
     pauseController.state = !pauseController.state;
   }
@@ -161,23 +207,5 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
         (camera) => camera.lensDirection != state.controller!.description.lensDirection,
         orElse: () => cameras!.first);
     _setCamera(newCamera);
-  }
-
-  @override
-  void dispose() {
-    _disposeController();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (AppLifecycleState.paused == state) {
-      _disposeController();
-    } else {
-      if (this.state.controller == null) {
-        _initCamera();
-      }
-    }
   }
 }

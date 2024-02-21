@@ -25,24 +25,22 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
     path: '/notification',
     builder: (context, state) => const NotificationManager(),
   ),
-  GoRoute(path: '/category', builder: (context, state) => const CategoryScreen(), routes: [
-    GoRoute(
-      path: 'guide',
-      builder: (context, state) => const GuideScreen(),
-      routes: [
-        GoRoute(
-          path: 'camera',
-          builder: (context, state) => const CameraScreen(),
-          routes: [
-            GoRoute(
-              path: 'result',
-              builder: (context, state) => const ResultScreen(),
-            ),
-          ],
-        )
-      ]
-    ),
-  ]),
+  GoRoute(
+    path: '/category', 
+    builder: (context, state) => const CategoryScreen(),
+  ),
+  GoRoute(
+    path: '/guide',
+    builder: (context, state) => const GuideScreen(),
+  ),
+  GoRoute(
+    path: '/camera',
+    builder: (context, state) => const CameraScreen(),
+  ),
+  GoRoute(
+    path: '/result',
+    builder: (context, state) => const ResultScreen(),
+  ),
   GoRoute(
     path: '/report',
     builder: (context, state) => const ReportScreen(),

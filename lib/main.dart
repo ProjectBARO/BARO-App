@@ -40,7 +40,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'BARO',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white, fontFamily: 'NotoSans'),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: const ColorScheme(
+          brightness: Brightness.light,
+          primary: Colors.black,
+          onPrimary: Colors.white,
+          secondary: Colors.black,
+          onSecondary: Colors.black,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.white,
+          onBackground: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black
+        ),
+        scaffoldBackgroundColor: Colors.white, 
+        primaryColor: Colors.white, 
+        fontFamily: 'NotoSans'
+      ),
       routerConfig: router,
     );
   }

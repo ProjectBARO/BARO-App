@@ -22,7 +22,6 @@ class LoginState extends ConsumerState<Login> {
   _autoLogin() async {
     String? accessToken = await storage.read(key: "accessToken");
     if (accessToken != null) {
-      if (!mounted) return;
       ref.read(authProvider).getUserInfo(accessToken).then((User? user) {
         ref.read(userProvider.notifier).setUser(user);
         GoRouter.of(context).go('/main');
@@ -30,6 +29,8 @@ class LoginState extends ConsumerState<Login> {
       }).catchError((error) {
         FlutterNativeSplash.remove();
       });
+    } else {
+      FlutterNativeSplash.remove();
     }
   }
 
@@ -54,7 +55,7 @@ class LoginState extends ConsumerState<Login> {
             children: [
               const SizedBox(height: 20),
               SizedBox(
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height * 0.6,
                 child: const IntroView(),
               ),
@@ -68,8 +69,8 @@ class LoginState extends ConsumerState<Login> {
                       userState.setUser(user);
                       auth.getToken(userState.currentUser!).then((String token) {
                         auth.storeToken(token);
+                        GoRouter.of(context).go('/main');
                       });
-                      GoRouter.of(context).go('/main');
                     } else {
                       print("로그인 실패");
                     }

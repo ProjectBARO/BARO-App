@@ -16,7 +16,7 @@ class PercentageView extends ConsumerWidget {
       int ratio = double.parse(data.normalRatio!).toInt();
       int myScore = double.parse(data.myScore!).toInt();
       int averageScore = double.parse(data.averageScore!).toInt();
-
+      
       return Column(
           children: [
             Padding(
@@ -48,7 +48,7 @@ class PercentageView extends ConsumerWidget {
     }, error: (_, __) {
       return const Center(
         child: Text(
-          "측정된 데이터가 없습니다.\n자세를 측정해보세요!",
+          "측정된 데이터가 없습니다.\n마이페이지에서 정보를 입력한 다음\n자세를 측정해보세요!",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 20.0),
         ),

@@ -30,7 +30,7 @@ class CalendarScreen extends ConsumerWidget {
               const ReportCard(),
             ],
           ),
-        )
+        ),
       ),
     );
   }

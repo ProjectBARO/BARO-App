@@ -25,7 +25,7 @@ class VideoNotifier extends StateNotifier<Video> {
     }
   }
 
-  void setVideoUrl(String url) {
+  Future<void> setVideoUrl(String url) async {
     state = state.copyWith(videoUrl: url);
   }
 
@@ -50,13 +50,8 @@ class VideoNotifier extends StateNotifier<Video> {
     return length.inSeconds;
   }
 
-  Future<void> _processVideo(String url, int count) async {
-    setVideoUrl(url);
-    setAlertCount(count);
-  }
-
-  void setVideoInfo(String url, int count) {
-    _processing = _processVideo(url, count);
+  void setVideoInfo(String url) {
+    _processing = setVideoUrl(url);
   }
 
   Future<void> uploadVideoInfo() async {

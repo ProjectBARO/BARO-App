@@ -40,20 +40,43 @@ class _IntroViewState extends State<IntroView> {
         PageView(
           controller: _controller,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Container(
-                alignment: Alignment.topLeft,
-                child: const Text(
-                  "앉아 있는 시간,\n건강하게 바로 세우다.",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 25),
-                ),
+            Container(
+              alignment: Alignment.topLeft,
+              child: const Text(
+                "앉아 있는 시간,\n건강하게 바로 세우다.",
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: 35),
               ),
             ),
-            const Text("2"),
-            const Text("3"),
-            const Text("4"),
+            Column(
+              children: [
+                Image.asset('assets/images/posture.png'),
+                const Text('실시간 자세 분석을 통해 바른 자세로 앉아보세요.', style: TextStyle(fontSize: 20))
+              ],
+            ),
+            Column(
+              children: [
+                Image.asset(
+                  width: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  'assets/images/report.png'
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                const Text("자세 분석 결과를 통해 자세 습관을 개선하세요.", style: TextStyle(fontSize: 20))
+              ],
+            ),
+            Column(
+              children: [
+                Image.asset(
+                  width: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  'assets/images/warning.png'
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                const Text("제공되는 데이터는 정확하지 않을 수 있습니다.", style: TextStyle(fontSize: 20)),
+                const Text("의사나 전문가와 상담하여 정확한 진단을 받으세요.", style: TextStyle(fontSize: 20))
+              ],
+            )
           ],
         ),
         Positioned(

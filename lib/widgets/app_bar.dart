@@ -11,12 +11,12 @@ PreferredSizeWidget customAppBar(BuildContext context) {
         icon: const FaIcon(FontAwesomeIcons.bell),
         onPressed: () {},
       ),
-      Builder(
-        builder: (context) => IconButton(
-          icon: const FaIcon(FontAwesomeIcons.bars),
-          onPressed: () => Scaffold.of(context).openEndDrawer(),
-        ),
-      ),
+      // Builder(
+      //   builder: (context) => IconButton(
+      //     icon: const FaIcon(FontAwesomeIcons.bars),
+      //     onPressed: () => Scaffold.of(context).openEndDrawer(),
+      //   ),
+      // ),
     ],
   );
 }
