@@ -35,6 +35,36 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   }
 
   List<CameraDescription>? cameras;
+  
+  @override
+  void dispose() {
+    _disposeController();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    final CameraController? cameraController = this.state.controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.pausePreview();
+      if (cameraController.value.isRecordingVideo) {
+        cameraController.pauseVideoRecording();
+      }
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      cameraController.resumePreview();
+      if (cameraController.value.isRecordingPaused) {
+        cameraController.resumeVideoRecording();
+      }
+    }
+  }
 
   Future<void> _initCamera() async {
     cameras = await availableCameras();
@@ -67,35 +97,9 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     }
   }
 
-  @override
-  void dispose() {
-    _disposeController();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    final CameraController? cameraController = this.state.controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-      await _disposeController();
-    }
-    if (state == AppLifecycleState.resumed) {
-      await _setCamera(cameraController.description);
-    }
-  }
-
   Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
     if (state.isRecording) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) => loadingDialog());
+      showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => loadingDialog());
       _stopRecording(ref).then((_) {
         _setVideo(ref).then((_) {
           context.go('/result');
@@ -111,12 +115,12 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     await Future.delayed(const Duration(seconds: 10));
     await state.controller!.startVideoRecording();
     state = state.copyWith(isRecording: true);
-    _captureController(true, ref);
+    _captureVideo(true, ref);
   }
 
   Future<void> _stopRecording(WidgetRef ref) async {
     XFile videoFile = await state.controller!.stopVideoRecording();
-    _captureController(false, ref);
+    _captureVideo(false, ref);
     state = state.copyWith(isRecording: false, videoPath: videoFile.path);
   }
 
@@ -134,7 +138,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     }
   }
 
-  void _captureController(bool isStart, WidgetRef ref) {
+  void _captureVideo(bool isStart, WidgetRef ref) {
     final classifier = ref.read(classifierProvider.notifier);
     if (isStart) {
       captureTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
@@ -153,6 +157,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   }
 
   Future<bool> _processVideo(String videoPath) async {
+    // 압축 과정 생략
     // String compressedVideoPath = await _compressVideo(videoPath);
     // if (compressedVideoPath.isEmpty) {
     //   log("압축 실패");
@@ -195,10 +200,10 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     final pauseController = ref.watch(pauseProvider.notifier);
     if (pauseController.state) {
       await state.controller!.resumeVideoRecording();
-      _captureController(true, ref);
+      _captureVideo(true, ref);
     } else {
       await state.controller!.pauseVideoRecording();
-      _captureController(false, ref);
+      _captureVideo(false, ref);
     }
     pauseController.state = !pauseController.state;
   }
