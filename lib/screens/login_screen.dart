@@ -1,9 +1,12 @@
-import 'package:baro_project/models/user.dart';
+import 'dart:developer';
+
+import 'package:baro_project/models/user.dart' as model_user;
 import 'package:baro_project/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import '../widgets/intro_view.dart';
@@ -22,11 +25,12 @@ class LoginState extends ConsumerState<Login> {
   _autoLogin() async {
     String? accessToken = await storage.read(key: "accessToken");
     if (accessToken != null) {
-      ref.read(authProvider).getUserInfo(accessToken).then((User? user) {
+      ref.read(authProvider).getUserInfo(accessToken).then((model_user.User? user) {
         ref.read(userProvider.notifier).setUser(user);
         GoRouter.of(context).go('/main');
         FlutterNativeSplash.remove();
       }).catchError((error) {
+        Fluttertoast.showToast(msg: '로그인에 실패했습니다. : $error');
         FlutterNativeSplash.remove();
       });
     } else {
@@ -60,23 +64,24 @@ class LoginState extends ConsumerState<Login> {
                 child: const IntroView(),
               ),
               const SizedBox(height: 50),
-              SignInButton(
-                Buttons.google,
-                text: "Google 계정으로 로그인",
-                onPressed: () {
-                  auth.signInWithGoogle().then((User? user) {
-                    if (user != null) {
-                      userState.setUser(user);
-                      auth.getToken(userState.currentUser!).then((String token) {
-                        auth.storeToken(token);
-                        GoRouter.of(context).go('/main');
-                      });
-                    } else {
-                      print("로그인 실패");
+              SignInButton(Buttons.google, text: "Google 계정으로 로그인", onPressed: () async {
+                try {
+                  final user = await auth.getUserFromGoogle();
+                  if (user != null) {
+                    userState.setUser(user);
+                    final token = await auth.getToken(userState.currentUser!);
+                    await auth.storeToken(token);
+                    if (context.mounted) {
+                      context.go('/main');
                     }
-                  });
-                },
-              )
+                  } else {
+                    Fluttertoast.showToast(msg: '로그인에 실패했습니다.');
+                  }
+                } catch (e) {
+                  Fluttertoast.showToast(msg: '로그인 중 오류가 발생했습니다. : $e');
+                  log(e.toString());
+                }
+              })
             ],
           ),
         ));

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:numberpicker/numberpicker.dart';
 
-import '../models/user.dart';
+import '../models/user.dart' as user_model;
 import '../provider/auth_provider.dart';
 import '../provider/user_provider.dart';
 import 'info_widget.dart';
@@ -12,7 +12,7 @@ class EditDialog extends StatefulWidget {
   final WidgetRef ref;
   final String title;
   final String value;
-  final User user;
+  final user_model.User user;
 
   const EditDialog(this.ref, this.title, this.value, this.user, {super.key});
 
@@ -76,7 +76,7 @@ class _EditDialogState extends State<EditDialog> {
         TextButton(
           child: const Text("확인"),
           onPressed: () async {
-            User updatedUser = widget.title == "성별"
+            user_model.User updatedUser = widget.title == "성별"
                 ? widget.user.copyWith(gender: getGenderToUpdate(gender))
                 : getUpdatedUser(widget.title, widget.user, controller);
             await authService.updateUserInfo(updatedUser).then((value) {
