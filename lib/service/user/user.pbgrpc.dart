@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: lib/service/user/user.proto
+//  source: user.proto
 //
 // @dart = 2.12
 
@@ -19,26 +19,26 @@ import 'user.pb.dart' as $0;
 
 export 'user.pb.dart';
 
-@$pb.GrpcServiceName('UserService')
+@$pb.GrpcServiceName('user.UserService')
 class UserServiceClient extends $grpc.Client {
   static final _$login = $grpc.ClientMethod<$0.RequestCreateUser, $0.ResponseToken>(
-      '/UserService/Login',
+      '/user.UserService/Login',
       ($0.RequestCreateUser value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.ResponseToken.fromBuffer(value));
   static final _$getUserInfo = $grpc.ClientMethod<$0.Empty, $0.ResponseUser>(
-      '/UserService/GetUserInfo',
+      '/user.UserService/GetUserInfo',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.ResponseUser.fromBuffer(value));
   static final _$updateUserInfo = $grpc.ClientMethod<$0.RequestUpdateUser, $0.ResponseUser>(
-      '/UserService/UpdateUserInfo',
+      '/user.UserService/UpdateUserInfo',
       ($0.RequestUpdateUser value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.ResponseUser.fromBuffer(value));
   static final _$deleteUser = $grpc.ClientMethod<$0.Empty, $0.Empty>(
-      '/UserService/DeleteUser',
+      '/user.UserService/DeleteUser',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$updateFcmToken = $grpc.ClientMethod<$0.RequestUpdateFcmToken, $0.ResponseUpdateFcmToken>(
-      '/UserService/UpdateFcmToken',
+      '/user.UserService/UpdateFcmToken',
       ($0.RequestUpdateFcmToken value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.ResponseUpdateFcmToken.fromBuffer(value));
 
@@ -69,9 +69,9 @@ class UserServiceClient extends $grpc.Client {
   }
 }
 
-@$pb.GrpcServiceName('UserService')
+@$pb.GrpcServiceName('user.UserService')
 abstract class UserServiceBase extends $grpc.Service {
-  $core.String get $name => 'UserService';
+  $core.String get $name => 'user.UserService';
 
   UserServiceBase() {
     $addMethod($grpc.ServiceMethod<$0.RequestCreateUser, $0.ResponseToken>(

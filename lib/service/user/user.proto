@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+package user;
+
+option go_package = "baro/protos/user";
+
 message User {
     uint64 id = 1;
     string name = 2;
