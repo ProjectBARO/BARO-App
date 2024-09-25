@@ -1,3 +1,5 @@
+import '../service/user/user.pb.dart';
+
 class User {
   final String? email;
   final String? name;
@@ -7,23 +9,13 @@ class User {
 
   User({required this.email, required this.name, this.nickname, required this.age, required this.gender});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'name': name,
-      'nickname': nickname,
-      'age': age,
-      'gender': gender,
-    };
-  }
-
-  factory User.fromJson(Map<String, dynamic> json) {
+  static User fromproto(ResponseUser response) {
     return User(
-      email: json['email'] as String?,
-      name: json['name'] as String?,
-      nickname: json['nickname'] as String?,
-      age: json['age'] as int?,
-      gender: json['gender'] as String?,
+      email: response.email,
+      name: response.name,
+      nickname: response.nickname,
+      age: response.age,
+      gender: response.gender
     );
   }
 
