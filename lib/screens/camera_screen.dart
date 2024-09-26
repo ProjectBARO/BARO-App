@@ -56,7 +56,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
 
   void _startBrightnessTimer() async {
     _brightnessTimer?.cancel();
-    _brightnessTimer = Timer(const Duration(seconds: 5), () {
+    _brightnessTimer = Timer(const Duration(seconds: 30), () {
       _dimScreen();
     });
   }

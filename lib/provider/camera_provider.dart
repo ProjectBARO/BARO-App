@@ -103,12 +103,10 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
 
   Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
     if (state.isRecording) {
-      showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => loadingDialog());
-      _stopRecording(ref).then((_) {
-        _setVideo(ref).then((_) {
-          context.go('/result');
-        });
-      });
+      ValueNotifier<double> progressNotifier = ValueNotifier(0.0);
+      showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => loadingDialog(progressNotifier));
+      await _stopRecording(ref);
+      await _setVideo(ref, progressNotifier);
     } else {
       await _startRecording(ref);
     }
@@ -137,18 +135,17 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     recordingLimitTimer?.cancel();
   }
 
-  Future<void> _setVideo(WidgetRef ref) async {
+  Future<void> _setVideo(WidgetRef ref, ValueNotifier<double> progressNotifier) async {
     final classifier = ref.read(classifierProvider.notifier);
     final video = ref.read(videoProvider.notifier);
     video.setAnalysisTime(state.videoPath!);
     video.setAlertCount(classifier.state.alertCount);
-    bool result = await _processVideo(state.videoPath!);
-    if (result) {
-      await Future(() async {
+    await _processVideo(state.videoPath!, progressNotifier).then((result) {
+      if (result) {
         video.setVideoInfo(state.videoUrl!);
-        await video.uploadVideoInfo();
-      });
-    }
+        video.uploadVideoInfo();
+      }
+    });
   }
 
   void _captureVideo(bool isStart, WidgetRef ref) {
@@ -169,7 +166,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     }
   }
 
-  Future<bool> _processVideo(String videoPath) async {
+  Future<bool> _processVideo(String videoPath, ValueNotifier<double> progressNotifier) async {
     // 압축 과정 생략
     // String compressedVideoPath = await _compressVideo(videoPath);
     // if (compressedVideoPath.isEmpty) {
@@ -177,7 +174,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     //   return false;
     // }
     // bool uploadResult = await _uploadVideo(compressedVideoPath);
-    bool uploadResult = await _uploadVideo(videoPath);
+    bool uploadResult = await _uploadVideo(videoPath, progressNotifier);
     if (!uploadResult) {
       log("업로드 실패");
       return false;
@@ -197,10 +194,10 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     }
   }
 
-  Future<bool> _uploadVideo(String videoPath) async {
+  Future<bool> _uploadVideo(String videoPath, ValueNotifier<double> progressNotifier) async {
     try {
       state = state.copyWith(isUploading: true);
-      String url = await videoUploader.uploadVideo(videoPath);
+      String url = await videoUploader.uploadVideo(videoPath, progressNotifier);
       state = state.copyWith(isUploading: false, videoUrl: url);
       return true;
     } catch (e) {
