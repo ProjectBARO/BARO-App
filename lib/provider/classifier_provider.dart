@@ -32,30 +32,36 @@ class ClassifierNotifier extends StateNotifier<Classifier> {
       }
 
       _interpreter = interpreter ?? await Interpreter.fromAsset(MODEL_FILE_NAME, options: interpreterOptions);
-
     } catch (e) {
-      log(e.toString());
+      log("모델 로드 오류 : $e");
     }
   }
 
-  void predict(Float32List imgData) async {
+  Future<void> predict(Future<Float32List> imgDataFuture) async {
     if (_interpreter == null) return;
 
-    await Future.microtask(() {
-      List<Object> inputs = [imgData.reshape([1, INPUT_SIZE, INPUT_SIZE, 3])];
-      TensorBuffer output0 = TensorBuffer.createFixedSize(_interpreter!.getOutputTensor(0).shape, _interpreter!.getOutputTensor(0).type);
-      Map<int, Object> outputs = {0: output0.buffer};
-      _interpreter?.runForMultipleInputs(inputs, outputs);
-      Float32List resultArray = output0.buffer.asFloat32List();
+    try {
+      Float32List imgData = await imgDataFuture;
 
-      bool turtleState = resultArray[0] > resultArray[1] ? true : false;
-      if (turtleState != state.isTurtle) {
-        state = state.copyWith(isTurtle: turtleState);
-      }
+      await Future.microtask(() {
+        List<Object> inputs = [imgData.reshape([1, INPUT_SIZE, INPUT_SIZE, 3])];
+        TensorBuffer output0 = TensorBuffer.createFixedSize(_interpreter!.getOutputTensor(0).shape, _interpreter!.getOutputTensor(0).type);
+        Map<int, Object> outputs = {0: output0.buffer};
+        _interpreter?.runForMultipleInputs(inputs, outputs);
+        Float32List resultArray = output0.buffer.asFloat32List();
 
-      log("${resultArray[0]} ${resultArray[1]}");
-      _increment();
-    });
+        bool turtleState = resultArray[0] > resultArray[1] ? true : false;
+        if (turtleState != state.isTurtle) {
+          state = state.copyWith(isTurtle: turtleState);
+        }
+
+        log("${resultArray[0]} ${resultArray[1]}");
+        _increment();
+      });
+    }
+    catch (e) {
+      log("이미지 추론 오류 : $e");
+    }
   }
 
   void _increment() {
@@ -65,5 +71,4 @@ class ClassifierNotifier extends StateNotifier<Classifier> {
   }
 }
 
-final classifierProvider =
-    StateNotifierProvider.autoDispose<ClassifierNotifier, Classifier>((ref) => ClassifierNotifier());
+final classifierProvider = StateNotifierProvider.autoDispose<ClassifierNotifier, Classifier>((ref) => ClassifierNotifier());

@@ -168,7 +168,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
           final capturedImage = await screenshotController.capture(pixelRatio: 0.5);
 
           if (capturedImage != null) {
-            Float32List imgData = ImageConverter.convertImage(capturedImage);
+            Future<Float32List> imgData = ImageConverter.convertImageInIsolate(capturedImage);
             classifier.predict(imgData);
           }
         }
@@ -185,7 +185,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     //   log("압축 실패");
     //   return false;
     // }
-    // bool uploadResult = await _uploadVideo(compressedVideoPath);
+    // bool uploadResult = await _uploadVideo(compressedVideoPath, progressNotifier);
     bool uploadResult = await _uploadVideo(videoPath, progressNotifier);
     if (!uploadResult) {
       log("업로드 실패");
