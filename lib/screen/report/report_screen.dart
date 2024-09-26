@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:baro_project/screen/result/util/time_converter.dart';
 import 'package:baro_project/common/app_bar_back.dart';
 import 'package:baro_project/screen/report/component/report_chart.dart';
@@ -13,7 +15,7 @@ class ReportScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final report = ref.watch(selectedReportProvider);
-    String formattedDate = DateFormat('yyyy년 MM월 dd일 hh시 mm분').format(report!.createdAt!);
+    String formattedDate = DateFormat('yyyy년 MM월 dd일 hh시 mm분').format(report!.createdAt!.toLocal());
 
     double degree = 0.0;
     if (report.neckAngles != '[]') {
@@ -147,10 +149,11 @@ class ReportScreen extends ConsumerWidget {
                                 child: Stack(
                                   children: [
                                     CustomPieChart(
-                                      value: report.normalRatio!.split('.').first == '0' ? 0 : double.parse(report.normalRatio!), 
-                                      color: const Color(0xff3492E8), 
-                                      radius: 15.0
-                                    ),
+                                        value: report.normalRatio!.split('.').first == '0'
+                                            ? 0
+                                            : double.parse(report.normalRatio!),
+                                        color: const Color(0xff3492E8),
+                                        radius: 15.0),
                                     Positioned.fill(
                                         child: Center(
                                             child: Column(
@@ -177,15 +180,11 @@ class ReportScreen extends ConsumerWidget {
                                 ),
                                 child: Stack(
                                   children: [
+                                    CustomPieChart(value: convertDegreeToPercentage(degree), color: Colors.greenAccent),
                                     CustomPieChart(
-                                      value: convertDegreeToPercentage(degree), 
-                                      color: Colors.greenAccent
-                                    ),
-                                    CustomPieChart(
-                                      value: convertDistanceToPercentage(distance), 
-                                      color: Colors.redAccent, 
-                                      centerSpaceRadius: 57.5
-                                    ),
+                                        value: convertDistanceToPercentage(distance),
+                                        color: Colors.redAccent,
+                                        centerSpaceRadius: 57.5),
                                     Positioned.fill(
                                         child: Center(
                                             child: Column(
@@ -227,7 +226,9 @@ class ReportScreen extends ConsumerWidget {
                     child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.03, bottom: MediaQuery.of(context).size.height * 0.03),
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.03,
+                              bottom: MediaQuery.of(context).size.height * 0.03),
                           child: SizedBox(
                             height: MediaQuery.of(context).size.height * 0.25,
                             width: MediaQuery.of(context).size.width * 0.7,
@@ -235,7 +236,10 @@ class ReportScreen extends ConsumerWidget {
                           ),
                         ),
                         const Text("측정 중 자세가 좋고 나쁨을 나타낸 그래프입니다.", style: TextStyle(fontSize: 15.0, color: Colors.grey)),
-                        const Text("모든 데이터는 정확하지 않을 수 있으므로, 참고용으로만 사용해주세요.", style: TextStyle(fontSize: 15.0, color: Colors.grey),)
+                        const Text(
+                          "모든 데이터는 정확하지 않을 수 있으므로, 참고용으로만 사용해주세요.",
+                          style: TextStyle(fontSize: 15.0, color: Colors.grey),
+                        )
                       ],
                     ),
                   ),
@@ -244,8 +248,7 @@ class ReportScreen extends ConsumerWidget {
               ],
             ),
           ),
-        )
-      );
+        ));
   }
 
   double convertDegreeToPercentage(double degree) {
