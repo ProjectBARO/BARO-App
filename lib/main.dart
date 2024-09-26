@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:baro_project/firebase_options.dart';
 import 'package:baro_project/service/firebase_message.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,7 +13,7 @@ import 'routes.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print('Handling a background message ${message.messageId}');
+  log('Handling a background message ${message.messageId}');
 }
 
 void main() async {
@@ -21,9 +22,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Message data: ${message.data}');
+    log('Message data: ${message.data}');
     if (message.notification != null) {
-      print('Message also contained a notification: ${message.notification}');
+      log('Message also contained a notification: ${message.notification}');
     }
     showNotification(message);
   });
@@ -41,24 +42,22 @@ class MyApp extends StatelessWidget {
       title: 'BARO',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: const ColorScheme(
-          brightness: Brightness.light,
-          primary: Colors.black,
-          onPrimary: Colors.white,
-          secondary: Colors.black,
-          onSecondary: Colors.black,
-          error: Colors.red,
-          onError: Colors.white,
-          background: Colors.white,
-          onBackground: Colors.black,
-          surface: Colors.white,
-          onSurface: Colors.black
-        ),
-        scaffoldBackgroundColor: Colors.white, 
-        primaryColor: Colors.white, 
-        fontFamily: 'NotoSans'
-      ),
+          useMaterial3: true,
+          colorScheme: const ColorScheme(
+              brightness: Brightness.light,
+              primary: Colors.black,
+              onPrimary: Colors.white,
+              secondary: Colors.black,
+              onSecondary: Colors.black,
+              error: Colors.red,
+              onError: Colors.white,
+              background: Colors.white,
+              onBackground: Colors.black,
+              surface: Colors.white,
+              onSurface: Colors.black),
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: Colors.white,
+          fontFamily: 'NotoSans'),
       routerConfig: router,
     );
   }

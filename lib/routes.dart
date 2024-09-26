@@ -1,17 +1,16 @@
-import 'package:baro_project/screens/calendar_screen.dart';
-import 'package:baro_project/screens/category_screen.dart';
-import 'package:baro_project/screens/guide_screen.dart';
-import 'package:baro_project/screens/info_screen.dart';
-import 'package:baro_project/screens/youtube_screen.dart';
+import 'package:baro_project/screens/calendar/calendar_screen.dart';
+import 'package:baro_project/screens/category/category_screen.dart';
+import 'package:baro_project/screens/guide/guide_screen.dart';
+import 'package:baro_project/screens/information/information_screen.dart';
+import 'package:baro_project/screens/youtube/youtube_screen.dart';
 import 'package:baro_project/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'screens/camera_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/main_screen.dart';
-import 'screens/noti_screen.dart';
-import 'screens/report_screen.dart';
-import 'screens/result_screen.dart';
+import 'screens/camera/camera_screen.dart';
+import 'screens/login/login_screen.dart';
+import 'screens/main/main_screen.dart';
+import 'screens/report/report_screen.dart';
+import 'screens/result/result_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Shell');
@@ -20,10 +19,6 @@ final router = GoRouter(navigatorKey: _rootNavigatorKey, initialLocation: '/logi
   GoRoute(
     path: '/login',
     builder: (context, state) => const Login(),
-  ),
-  GoRoute(
-    path: '/notification',
-    builder: (context, state) => const NotificationManager(),
   ),
   GoRoute(
     path: '/category', 
