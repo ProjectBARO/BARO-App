@@ -21,7 +21,7 @@ class ClassifierNotifier extends StateNotifier<Classifier> {
 
   void loadModel({Interpreter? interpreter}) async {
     try {
-      final interpreterOptions = InterpreterOptions();
+      final interpreterOptions = InterpreterOptions()..threads = 2;
 
       if (Platform.isAndroid) {
         interpreterOptions.addDelegate(XNNPackDelegate());
