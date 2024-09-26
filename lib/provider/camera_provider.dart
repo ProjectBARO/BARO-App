@@ -10,6 +10,7 @@ import 'package:baro_project/widgets/loading_dialog.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
 import '../models/camera.dart';
@@ -27,6 +28,10 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   final VideoUploader videoUploader;
   final ScreenshotController screenshotController;
   Timer? captureTimer;
+  Timer? recordingLimitTimer;
+  List<CameraDescription>? cameras;
+
+  static const Duration maxRecordingTime = Duration(hours: 1);
 
   CameraNotifier({required this.videoCompressor, required this.videoUploader, required this.screenshotController})
       : super(CameraState()) {
@@ -34,12 +39,11 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     _initCamera();
   }
 
-  List<CameraDescription>? cameras;
-  
   @override
   void dispose() {
     _disposeController();
     WidgetsBinding.instance.removeObserver(this);
+    recordingLimitTimer?.cancel();
     super.dispose();
   }
 
@@ -116,12 +120,21 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
     await state.controller!.startVideoRecording();
     state = state.copyWith(isRecording: true);
     _captureVideo(true, ref);
+
+    recordingLimitTimer?.cancel();
+    recordingLimitTimer = Timer(maxRecordingTime, () {
+      if (state.isRecording) {
+        _stopRecording(ref);
+        Fluttertoast.showToast(msg: '녹화가 1시간을 초과하여 자동으로 중지되었습니다.');
+      }
+    });
   }
 
   Future<void> _stopRecording(WidgetRef ref) async {
     XFile videoFile = await state.controller!.stopVideoRecording();
     _captureVideo(false, ref);
     state = state.copyWith(isRecording: false, videoPath: videoFile.path);
+    recordingLimitTimer?.cancel();
   }
 
   Future<void> _setVideo(WidgetRef ref) async {
