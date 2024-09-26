@@ -3,28 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
-
-class Classifier {
-  bool isTurtle;
-  int alertCount;
-
-  Classifier({this.isTurtle = false, this.alertCount = 0});
-
-  Classifier copyWith({bool? isTurtle, int? alertCount}) {
-    return Classifier(
-      isTurtle: isTurtle ?? this.isTurtle,
-      alertCount: alertCount ?? this.alertCount,
-    );
-  }
-}
+import '../models/classifier.dart';
 
 class ClassifierNotifier extends StateNotifier<Classifier> {
   Interpreter? _interpreter;
 
   static const String MODEL_FILE_NAME = "baro_model.tflite";
   static const int INPUT_SIZE = 28;
-  // ImageProcessor? imageProcessor;
-  // int? padSize;
 
   ClassifierNotifier({
     Interpreter? interpreter,
@@ -41,18 +26,6 @@ class ClassifierNotifier extends StateNotifier<Classifier> {
       log(e.toString());
     }
   }
-
-  // TensorImage getProcessedImage(TensorImage? inputImage) {
-  //   padSize = math.max(inputImage?.height ?? 0, inputImage?.width ?? 0);
-
-  //   imageProcessor ??= ImageProcessorBuilder()
-  //       .add(ResizeWithCropOrPadOp(padSize ?? 0, padSize ?? 0))
-  //       .add(ResizeOp(INPUT_SIZE, INPUT_SIZE, ResizeMethod.NEAREST_NEIGHBOUR))
-  //       .add(NormalizeOp(0, 1))
-  //       .build();
-  //   inputImage = imageProcessor?.process(inputImage!);
-  //   return inputImage!;
-  // }
 
   void predict(Float32List imgData) {
     if (_interpreter == null) return;
