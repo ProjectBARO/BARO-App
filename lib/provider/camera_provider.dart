@@ -11,7 +11,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
 import '../models/camera.dart';
 import 'timer_provider.dart';
@@ -89,7 +88,7 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
 
     CameraController controller = CameraController(
       cameraDescription,
-      ResolutionPreset.medium,
+      ResolutionPreset.low,
       enableAudio: false,
     );
 
@@ -104,7 +103,10 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   Future<void> startStopRecording(WidgetRef ref, BuildContext context) async {
     if (state.isRecording) {
       ValueNotifier<double> progressNotifier = ValueNotifier(0.0);
-      showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => loadingDialog(progressNotifier));
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => loadingDialog(progressNotifier));
       await _stopRecording(ref);
       await _setVideo(ref, progressNotifier);
     } else {
@@ -149,20 +151,30 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
   }
 
   void _captureVideo(bool isStart, WidgetRef ref) {
-    final classifier = ref.read(classifierProvider.notifier);
     if (isStart) {
-      captureTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
-        if (!state.isRecording) {
-          timer.cancel();
-        } else {
-          screenshotController.capture().then((capturedImage) {
-            Float32List imgData = ImageConverter.convertImage(capturedImage!);
-            classifier.predict(imgData);
-          });
-        }
-      });
+      _captureAndClassify(ref);
     } else {
       captureTimer?.cancel();
+    }
+  }
+
+  Future<void> _captureAndClassify(WidgetRef ref) async {
+    final classifier = ref.read(classifierProvider.notifier);
+    while (state.isRecording) {
+      try {
+        await Future.delayed(const Duration(seconds: 30));
+
+        if (state.isRecording) {
+          final capturedImage = await screenshotController.capture(pixelRatio: 0.5);
+
+          if (capturedImage != null) {
+            Float32List imgData = ImageConverter.convertImage(capturedImage);
+            classifier.predict(imgData);
+          }
+        }
+      } catch (e) {
+        log("이미지 추론 오류 : $e");
+      }
     }
   }
 
