@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:baro_project/screen/result/util/time_converter.dart';
 import 'package:baro_project/common/app_bar_back.dart';
 import 'package:baro_project/screen/report/component/report_chart.dart';
