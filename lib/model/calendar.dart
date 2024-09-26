@@ -8,8 +8,10 @@ class Calendar {
   });
 
   factory Calendar.fromJson(Map<String, dynamic> json) {
-    DateTime? dateTime = json['created_at'] == null ? null : DateTime.parse(json['created_at'] as String);
-    DateTime? simpleDate = dateTime == null? null : DateTime(dateTime.year, dateTime.month, dateTime.day);
+    DateTime? dateTime = json['created_at'] == null ? null : DateTime.parse(json['created_at'] as String).toLocal();
+    DateTime? simpleDate = dateTime == null
+        ? null
+        : DateTime(dateTime.year, dateTime.month, dateTime.day);
     return Calendar(
       id: json['id'] as int?,
       createdAt: simpleDate,
