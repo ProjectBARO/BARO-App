@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:numberpicker/numberpicker.dart';
 
-import '../../../models/user.dart' as user_model;
+import '../../../model/user.dart' as user_model;
 import '../../login/provider/auth_provider.dart';
 import '../../login/provider/user_provider.dart';
 import 'info_widget.dart';

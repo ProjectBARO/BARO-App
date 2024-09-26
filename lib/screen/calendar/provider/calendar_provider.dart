@@ -1,6 +1,6 @@
-import 'package:baro_project/screens/calendar/util/calendar_service.dart';
+import 'package:baro_project/screen/calendar/util/calendar_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/calendar.dart';
+import '../../../model/calendar.dart';
 
 class CalendarData extends StateNotifier<Map<int, List<Calendar>>> {
   CalendarData() : super({});

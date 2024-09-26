@@ -1,4 +1,4 @@
-import 'package:baro_project/screens/calendar/provider/date_provider.dart';
+import 'package:baro_project/screen/calendar/provider/date_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';

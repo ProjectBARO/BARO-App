@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
-import '../../../models/classifier.dart';
+import '../../../model/classifier.dart';
 
 class ClassifierNotifier extends StateNotifier<Classifier> {
   Interpreter? _interpreter;

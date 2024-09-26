@@ -1,8 +1,8 @@
-import 'package:baro_project/screens/information/component/edit_dialog.dart';
+import 'package:baro_project/screen/information/component/edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../../models/user.dart';
+import '../../../model/user.dart';
 import '../../login/provider/user_provider.dart';
 
 Widget buildInfoList(String title, String value, BuildContext context, WidgetRef ref, {bool canEdit = false}) {

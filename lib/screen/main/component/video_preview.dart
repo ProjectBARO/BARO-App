@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:baro_project/screens/youtube/provider/youtube_provider.dart';
+import 'package:baro_project/screen/youtube/provider/youtube_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

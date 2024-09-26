@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:baro_project/models/percentage.dart';
+import 'package:baro_project/model/percentage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;

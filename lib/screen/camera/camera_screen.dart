@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:baro_project/screens/camera/provider/camera_provider.dart';
-import 'package:baro_project/widgets/app_bar_back.dart';
-import 'package:baro_project/screens/camera/component/classify_toast.dart';
+import 'package:baro_project/screen/camera/provider/camera_provider.dart';
+import 'package:baro_project/common/app_bar_back.dart';
+import 'package:baro_project/screen/camera/component/classify_toast.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

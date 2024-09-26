@@ -1,9 +1,9 @@
-import 'package:baro_project/screens/calendar/provider/date_provider.dart';
-import 'package:baro_project/screens/calendar/component/calendar_style.dart';
+import 'package:baro_project/screen/calendar/provider/date_provider.dart';
+import 'package:baro_project/screen/calendar/component/calendar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../../../models/calendar.dart';
+import '../../../model/calendar.dart';
 import '../provider/calendar_provider.dart';
 
 class CustomCalendar extends ConsumerStatefulWidget {

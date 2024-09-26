@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
-import '../../../models/video.dart';
+import '../../../model/video.dart';
 
 class VideoNotifier extends StateNotifier<Video> {
   VideoNotifier() : super(Video(alertCount: 0, analysisTime: 0, type: '', videoUrl: ''));

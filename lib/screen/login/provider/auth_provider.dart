@@ -8,7 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:grpc/grpc.dart';
 import 'package:http/http.dart' as http;
-import '../../../models/user.dart' as user_model;
+import '../../../model/user.dart' as user_model;
 
 final authProvider = Provider<AuthService>((ref) => AuthService());
 

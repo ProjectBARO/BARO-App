@@ -1,9 +1,9 @@
-import 'package:baro_project/screens/result/util/time_converter.dart';
-import 'package:baro_project/screens/result/component/result_text.dart';
+import 'package:baro_project/screen/result/util/time_converter.dart';
+import 'package:baro_project/screen/result/component/result_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:baro_project/widgets/app_bar.dart';
+import 'package:baro_project/common/app_bar.dart';
 import '../login/provider/user_provider.dart';
 import '../camera/provider/video_provider.dart';
 

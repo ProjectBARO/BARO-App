@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:typed_data';
-import 'package:baro_project/screens/camera/provider/classifier_provider.dart';
-import 'package:baro_project/screens/camera/provider/video_provider.dart';
-import 'package:baro_project/screens/camera/util/image_converter.dart';
-import 'package:baro_project/screens/camera/util/video_compressor.dart';
-import 'package:baro_project/screens/camera/util/video_uploader.dart';
-import 'package:baro_project/screens/camera/component/loading_dialog.dart';
+import 'package:baro_project/screen/camera/provider/classifier_provider.dart';
+import 'package:baro_project/screen/camera/provider/video_provider.dart';
+import 'package:baro_project/screen/camera/util/image_converter.dart';
+import 'package:baro_project/screen/camera/util/video_compressor.dart';
+import 'package:baro_project/screen/camera/util/video_uploader.dart';
+import 'package:baro_project/screen/camera/component/loading_dialog.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:screenshot/screenshot.dart';
-import '../../../models/camera.dart';
+import '../../../model/camera.dart';
 import 'timer_provider.dart';
 
 final cameraProvider = StateNotifierProvider.autoDispose<CameraNotifier, CameraState>((ref) => CameraNotifier(

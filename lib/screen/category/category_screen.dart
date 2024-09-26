@@ -1,5 +1,5 @@
-import 'package:baro_project/screens/camera/provider/video_provider.dart';
-import 'package:baro_project/widgets/app_bar_back.dart';
+import 'package:baro_project/screen/camera/provider/video_provider.dart';
+import 'package:baro_project/common/app_bar_back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

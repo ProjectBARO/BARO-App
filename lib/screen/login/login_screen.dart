@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:baro_project/models/user.dart' as model_user;
-import 'package:baro_project/screens/login/provider/auth_provider.dart';
+import 'package:baro_project/model/user.dart' as model_user;
+import 'package:baro_project/screen/login/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:baro_project/models/youtube_video.dart';
+import 'package:baro_project/model/youtube_video.dart';
 import 'package:baro_project/service/proto/video/video.pbgrpc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grpc/grpc.dart';

@@ -1,5 +1,5 @@
-import 'package:baro_project/models/youtube_video.dart';
-import 'package:baro_project/screens/youtube/util/youtube_service.dart';
+import 'package:baro_project/model/youtube_video.dart';
+import 'package:baro_project/screen/youtube/util/youtube_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final youtubeServiceProvider = Provider<YoutubeService>((ref) => YoutubeService());

@@ -1,7 +1,7 @@
-import 'package:baro_project/models/calendar.dart';
-import 'package:baro_project/screens/calendar/provider/calendar_provider.dart';
+import 'package:baro_project/model/calendar.dart';
+import 'package:baro_project/screen/calendar/provider/calendar_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/report.dart';
+import '../../../model/report.dart';
 
 final reportProvider = FutureProvider.family<List<Report>, DateTime>((ref, selectedDay) async {
   int month = int.parse('${selectedDay.year}${selectedDay.month.toString().padLeft(2, '0')}');

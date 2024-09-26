@@ -1,16 +1,16 @@
-import 'package:baro_project/screens/calendar/calendar_screen.dart';
-import 'package:baro_project/screens/category/category_screen.dart';
-import 'package:baro_project/screens/guide/guide_screen.dart';
-import 'package:baro_project/screens/information/information_screen.dart';
-import 'package:baro_project/screens/youtube/youtube_screen.dart';
-import 'package:baro_project/widgets/nav_bar.dart';
+import 'package:baro_project/screen/calendar/calendar_screen.dart';
+import 'package:baro_project/screen/category/category_screen.dart';
+import 'package:baro_project/screen/guide/guide_screen.dart';
+import 'package:baro_project/screen/information/information_screen.dart';
+import 'package:baro_project/screen/youtube/youtube_screen.dart';
+import 'package:baro_project/common/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'screens/camera/camera_screen.dart';
-import 'screens/login/login_screen.dart';
-import 'screens/main/main_screen.dart';
-import 'screens/report/report_screen.dart';
-import 'screens/result/result_screen.dart';
+import 'screen/camera/camera_screen.dart';
+import 'screen/login/login_screen.dart';
+import 'screen/main/main_screen.dart';
+import 'screen/report/report_screen.dart';
+import 'screen/result/result_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Shell');

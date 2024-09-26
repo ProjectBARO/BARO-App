@@ -1,6 +1,6 @@
-import 'package:baro_project/screens/calendar/provider/date_provider.dart';
-import 'package:baro_project/screens/report/provider/report_provider.dart';
-import 'package:baro_project/screens/result/util/time_converter.dart';
+import 'package:baro_project/screen/calendar/provider/date_provider.dart';
+import 'package:baro_project/screen/report/provider/report_provider.dart';
+import 'package:baro_project/screen/result/util/time_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

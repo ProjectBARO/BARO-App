@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:baro_project/models/report.dart';
+import 'package:baro_project/model/report.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:baro_project/models/calendar.dart';
+import 'package:baro_project/model/calendar.dart';
 
 class CalendarService {
   final storage = const FlutterSecureStorage();
