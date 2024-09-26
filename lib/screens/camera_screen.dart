@@ -42,7 +42,7 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
     if (!_isDimmed) {
       _isDimmed = true;
       _currentBrightness = await ScreenBrightness().current;
-      await ScreenBrightness().setScreenBrightness(0.2);
+      await ScreenBrightness().setScreenBrightness(0.1);
     }
   }
 
@@ -56,9 +56,14 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
 
   void _startBrightnessTimer() async {
     _brightnessTimer?.cancel();
-    _brightnessTimer = Timer(const Duration(seconds: 30), () {
+    _brightnessTimer = Timer(const Duration(seconds: 5), () {
       _dimScreen();
     });
+  }
+
+  void _stopBrightnessTimer() async {
+    _brightnessTimer?.cancel();
+    await ScreenBrightness().setScreenBrightness(_currentBrightness);
   }
 
   @override
@@ -71,8 +76,13 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
       FloatingActionButton(
         heroTag: "Start and Stop",
         onPressed: () {
-          ref.watch(cameraProvider.notifier).startStopRecording(ref, context);
+          if (cameraState.isRecording) {
+            _stopBrightnessTimer();
+            ref.watch(cameraProvider.notifier).startStopRecording(ref, context).then((value) => context.go('/result'));
+            return;
+          }
           _startBrightnessTimer();
+          ref.watch(cameraProvider.notifier).startStopRecording(ref, context);
         },
         shape: const CircleBorder(),
         child: FaIcon(cameraState.isRecording ? FontAwesomeIcons.stop : FontAwesomeIcons.play),
