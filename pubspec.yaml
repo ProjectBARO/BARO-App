@@ -68,6 +68,7 @@ dependencies:
   numberpicker: ^2.1.2
   fluttertoast: ^8.2.4
   wakelock_plus: ^1.1.4
+  screen_brightness: ^1.0.1
 
 dev_dependencies:
   flutter_test:

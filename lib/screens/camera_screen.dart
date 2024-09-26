@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:baro_project/provider/camera_provider.dart';
 import 'package:baro_project/widgets/app_bar_back.dart';
 import 'package:baro_project/widgets/classify_toast.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -19,6 +22,10 @@ class CameraScreen extends ConsumerStatefulWidget {
 }
 
 class CameraScreenState extends ConsumerState<CameraScreen> {
+  double _currentBrightness = 1.0;
+  bool _isDimmed = false;
+  Timer? _brightnessTimer;
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +38,29 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
     super.dispose();
   }
 
+  void _dimScreen() async {
+    if (!_isDimmed) {
+      _isDimmed = true;
+      _currentBrightness = await ScreenBrightness().current;
+      await ScreenBrightness().setScreenBrightness(0.2);
+    }
+  }
+
+  void _restoreBrightness() async {
+    if (_isDimmed) {
+      _isDimmed = false;
+      await ScreenBrightness().setScreenBrightness(_currentBrightness);
+      _startBrightnessTimer();
+    }
+  }
+
+  void _startBrightnessTimer() async {
+    _brightnessTimer?.cancel();
+    _brightnessTimer = Timer(const Duration(seconds: 30), () {
+      _dimScreen();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraProvider);
@@ -40,7 +70,10 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
     List<Widget> actionButtons = [
       FloatingActionButton(
         heroTag: "Start and Stop",
-        onPressed: () => ref.watch(cameraProvider.notifier).startStopRecording(ref, context),
+        onPressed: () {
+          ref.watch(cameraProvider.notifier).startStopRecording(ref, context);
+          _startBrightnessTimer();
+        },
         shape: const CircleBorder(),
         child: FaIcon(cameraState.isRecording ? FontAwesomeIcons.stop : FontAwesomeIcons.play),
       ),
@@ -51,7 +84,10 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
       actionButtons.add(
         FloatingActionButton(
           heroTag: "Pause and Resume",
-          onPressed: () => ref.watch(cameraProvider.notifier).pauseResumeRecording(ref),
+          onPressed: () {
+            ref.watch(cameraProvider.notifier).pauseResumeRecording(ref);
+            _startBrightnessTimer();
+          },
           shape: const CircleBorder(),
           child: FaIcon(isPause ? FontAwesomeIcons.play : FontAwesomeIcons.pause),
         ),
@@ -69,43 +105,43 @@ class CameraScreenState extends ConsumerState<CameraScreen> {
       );
     }
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: customAppBarBack(context, () => context.pop()),
-        body: Stack(
-          children: <Widget>[
-            cameraState.controller != null && cameraState.controller!.value.isInitialized
-                ? Screenshot(
-                    controller: ref.watch(screenshotProvider),
-                    child: CameraPreview(cameraState.controller!, key: ValueKey(cameraState.controller)))
-                : const Center(
-                    child: CircularProgressIndicator(),
+    return GestureDetector(
+      onTap: () => _restoreBrightness(),
+      child: PopScope(
+        canPop: false,
+        child: Scaffold(
+          appBar: customAppBarBack(context, () => context.pop()),
+          body: Stack(
+            children: <Widget>[
+              cameraState.controller != null && cameraState.controller!.value.isInitialized
+                  ? Screenshot(
+                      controller: ref.watch(screenshotProvider),
+                      child: CameraPreview(cameraState.controller!, key: ValueKey(cameraState.controller)))
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+              if (timerState.currentTime > 0)
+                Center(
+                  child: Text(
+                    "${timerState.currentTime}",
+                    style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
                   ),
-            if (timerState.currentTime > 0)
-              Center(
-                child: Text(
-                  "${timerState.currentTime}",
-                  style: const TextStyle(fontSize: 128.0, fontWeight: FontWeight.w700),
                 ),
-              ),
-            const ClassifyToast(),
-            if (cameraState.isCompressing || cameraState.isUploading)
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-          ],
-        ),
-        floatingActionButton: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
+              const ClassifyToast(),
+              if (cameraState.isCompressing || cameraState.isUploading)
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+            ],
+          ),
+          floatingActionButton: Stack(alignment: Alignment.bottomCenter, children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: actionButtons,
             )
-          ]
+          ]),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
