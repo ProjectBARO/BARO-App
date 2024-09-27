@@ -48,12 +48,22 @@ class AuthService {
 
   Future<void> signIn(WidgetRef ref) async {
     final user = await getUserFromGoogle();
-    if (user != null) {
-      final accessToken = await getToken(user);
-      await storeToken(accessToken);
+    final channel = ClientChannel(dotenv.get('PROTO_URL'));
+    final stub = UserServiceClient(channel);
 
-      final userInfo = await getUserInfo(accessToken);
-      ref.read(userProvider.notifier).setUser(userInfo);
+    try {
+      if (user != null) {
+        final accessToken = await _getToken(user, channel, stub);
+        await storeToken(accessToken);
+        await Future.wait([
+          _updateFcmToken(accessToken, channel, stub),
+          getUserInfo(accessToken, ref)
+        ]);
+      }
+    } catch (e) {
+      throw Exception('Failed to sign in: $e');
+    } finally {
+      await channel.shutdown();
     }
   }
 
@@ -62,12 +72,8 @@ class AuthService {
     await storage.deleteAll();
   }
 
-  Future<String> getToken(user_model.User user) async {
+  Future<String> _getToken(user_model.User user, ClientChannel channel, UserServiceClient stub) async {
     String? fcmToken = await FirebaseMessaging.instance.getToken();
-
-    final channel = ClientChannel(dotenv.get('PROTO_URL'));
-    final stub = UserServiceClient(channel);
-
     try {
       final request = RequestCreateUser(
         name: user.name,
@@ -80,12 +86,10 @@ class AuthService {
       return response.token;
     } catch (e) {
       throw Exception('Failed to obtain token: $e');
-    } finally {
-      await channel.shutdown();
     }
   }
 
-  Future<user_model.User> getUserInfo(String accessToken) async {
+  Future<user_model.User> getUserInfo(String accessToken, WidgetRef ref) async {
     final channel = ClientChannel(dotenv.get('PROTO_URL'));
     final stub = UserServiceClient(channel);
 
@@ -93,6 +97,7 @@ class AuthService {
       final response =
           await stub.getUserInfo(Empty(), options: CallOptions(metadata: {'authorization': 'Bearer $accessToken'}));
       final user = user_model.User.fromproto(response);
+      ref.read(userProvider.notifier).setUser(user);
       return user;
     } catch (e) {
       throw Exception('Failed to obtain user info: $e');
@@ -113,6 +118,24 @@ class AuthService {
       throw Exception('Failed to update user info: $e');
     } finally {
       await channel.shutdown();
+    }
+  }
+
+  Future<void> _updateFcmToken(String accessToken, ClientChannel channel, UserServiceClient stub) async {
+    try {
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+      if (fcmToken == null) {
+        throw Exception('Failed to obtain fcm token');
+      }
+
+      final request = RequestUpdateFcmToken(fcmToken: fcmToken);
+      await stub.updateFcmToken(request,
+          options: CallOptions(
+            metadata: {'authorization': 'Bearer $accessToken'},
+          ));
+    } catch (e) {
+      throw Exception('Failed to update fcm token: $e');
     }
   }
 

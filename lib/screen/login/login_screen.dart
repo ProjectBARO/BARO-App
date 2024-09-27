@@ -23,7 +23,7 @@ class LoginState extends ConsumerState<Login> {
   _autoLogin() async {
     String? accessToken = await storage.read(key: "accessToken");
     if (accessToken != null) {
-      ref.read(authProvider).getUserInfo(accessToken).then((model_user.User? user) {
+      ref.read(authProvider).getUserInfo(accessToken, ref).then((model_user.User? user) {
         ref.read(userProvider.notifier).setUser(user);
         GoRouter.of(context).go('/main');
         FlutterNativeSplash.remove();
