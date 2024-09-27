@@ -164,6 +164,8 @@ class CameraNotifier extends StateNotifier<CameraState> with WidgetsBindingObser
       try {
         await Future.delayed(const Duration(seconds: 30));
 
+        if (!mounted) return;
+
         if (state.isRecording) {
           final capturedImage = await screenshotController.capture(pixelRatio: 0.5);
 
