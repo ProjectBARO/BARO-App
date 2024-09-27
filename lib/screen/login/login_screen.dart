@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:baro_project/model/user.dart' as model_user;
 import 'package:baro_project/screen/login/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +45,6 @@ class LoginState extends ConsumerState<Login> {
   @override
   Widget build(BuildContext context) {
     final auth = ref.read(authProvider);
-    final userState = ref.read(userProvider.notifier);
 
     return Scaffold(
         appBar: AppBar(
@@ -64,24 +61,16 @@ class LoginState extends ConsumerState<Login> {
                 child: const IntroView(),
               ),
               const SizedBox(height: 50),
-              SignInButton(Buttons.google, text: "Google 계정으로 로그인", onPressed: () async {
-                try {
-                  final user = await auth.getUserFromGoogle();
-                  if (user != null) {
-                    userState.setUser(user);
-                    final token = await auth.getToken(userState.currentUser!);
-                    await auth.storeToken(token);
-                    if (context.mounted) {
-                      context.go('/main');
-                    }
-                  } else {
-                    Fluttertoast.showToast(msg: '로그인에 실패했습니다.');
+              SignInButton(
+                Buttons.google, 
+                text: "Google 계정으로 로그인", 
+                onPressed: () async {
+                  await auth.signIn(ref);
+                  if (context.mounted) {
+                    context.go('/main');
                   }
-                } catch (e) {
-                  Fluttertoast.showToast(msg: '로그인 중 오류가 발생했습니다. : $e');
-                  log(e.toString());
                 }
-              })
+              )
             ],
           ),
         ));

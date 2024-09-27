@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'screen/camera/camera_screen.dart';
 import 'screen/login/login_screen.dart';
-import 'screen/main/main_screen.dart';
+import 'screen/home/home_screen.dart';
 import 'screen/report/report_screen.dart';
 import 'screen/result/result_screen.dart';
 

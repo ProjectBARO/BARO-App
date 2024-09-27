@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:baro_project/screen/login/provider/user_provider.dart';
 import 'package:baro_project/service/proto/user/user.pbgrpc.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -29,9 +29,8 @@ class AuthService {
 
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
     final response = await http.get(
-      Uri.parse('https://people.googleapis.com/v1/people/me?personFields=names,birthdays,genders,emailAddresses'),
-      headers: {'Authorization': 'Bearer ${googleAuth.accessToken}'}
-    );
+        Uri.parse('https://people.googleapis.com/v1/people/me?personFields=names,birthdays,genders,emailAddresses'),
+        headers: {'Authorization': 'Bearer ${googleAuth.accessToken}'});
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -44,6 +43,17 @@ class AuthService {
       return user_model.User(email: email, name: name, age: age, gender: gender);
     } else {
       throw Exception('Failed to sign in with google');
+    }
+  }
+
+  Future<void> signIn(WidgetRef ref) async {
+    final user = await getUserFromGoogle();
+    if (user != null) {
+      final accessToken = await getToken(user);
+      await storeToken(accessToken);
+
+      final userInfo = await getUserInfo(accessToken);
+      ref.read(userProvider.notifier).setUser(userInfo);
     }
   }
 
@@ -67,7 +77,6 @@ class AuthService {
         gender: user.gender ?? '',
       );
       final response = await stub.login(request);
-      log(response.toString());
       return response.token;
     } catch (e) {
       throw Exception('Failed to obtain token: $e');
@@ -81,13 +90,8 @@ class AuthService {
     final stub = UserServiceClient(channel);
 
     try {
-      final response = await stub.getUserInfo(
-        Empty(),
-        options: CallOptions(
-          metadata: {
-          'authorization': 'Bearer $accessToken'
-        })
-      );
+      final response =
+          await stub.getUserInfo(Empty(), options: CallOptions(metadata: {'authorization': 'Bearer $accessToken'}));
       final user = user_model.User.fromproto(response);
       return user;
     } catch (e) {
@@ -103,13 +107,8 @@ class AuthService {
     String? accessToken = await storage.read(key: 'accessToken');
 
     try {
-      await stub.updateUserInfo(
-        RequestUpdateUser(nickname: user.nickname, age: user.age, gender: user.gender),
-        options: CallOptions(
-          metadata: {
-          'authorization': 'Bearer $accessToken'
-        })  
-      );
+      await stub.updateUserInfo(RequestUpdateUser(nickname: user.nickname, age: user.age, gender: user.gender),
+          options: CallOptions(metadata: {'authorization': 'Bearer $accessToken'}));
     } catch (e) {
       throw Exception('Failed to update user info: $e');
     } finally {
@@ -123,13 +122,7 @@ class AuthService {
     String? accessToken = await storage.read(key: 'accessToken');
 
     try {
-      await stub.deleteUser(
-        Empty(),
-        options: CallOptions(
-          metadata: {
-          'authorization': 'Bearer $accessToken'
-        })  
-      );
+      await stub.deleteUser(Empty(), options: CallOptions(metadata: {'authorization': 'Bearer $accessToken'}));
       await signOut();
     } catch (e) {
       throw Exception('Failed to delete user info: $e');

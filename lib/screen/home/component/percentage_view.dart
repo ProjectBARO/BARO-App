@@ -1,6 +1,6 @@
-import 'package:baro_project/screen/main/component/bar_chart.dart';
+import 'package:baro_project/screen/home/component/bar_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:baro_project/screen/main/provider/percentage_provider.dart';
+import 'package:baro_project/screen/home/provider/percentage_provider.dart';
 import 'package:baro_project/screen/information/component/info_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

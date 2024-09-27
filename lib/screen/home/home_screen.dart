@@ -1,6 +1,6 @@
-import 'package:baro_project/screen/main/component/percentage_view.dart';
-import 'package:baro_project/screen/main/component/tip_text.dart';
-import 'package:baro_project/screen/main/component/video_preview.dart';
+import 'package:baro_project/screen/home/component/percentage_view.dart';
+import 'package:baro_project/screen/home/component/tip_text.dart';
+import 'package:baro_project/screen/home/component/video_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
