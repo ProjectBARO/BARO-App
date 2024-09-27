@@ -13,7 +13,7 @@ class ReportScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final report = ref.watch(selectedReportProvider);
-    String formattedDate = DateFormat('yyyy년 MM월 dd일 hh시 mm분').format(report!.createdAt!.toLocal());
+    String formattedDate = DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(report!.createdAt!.toLocal());
 
     double degree = 0.0;
     if (report.neckAngles != '[]') {
